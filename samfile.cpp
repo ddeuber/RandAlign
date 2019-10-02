@@ -65,18 +65,13 @@ int  SAMFile::generate_flag(int pos, bool isReverse, bool isRead1, int posOtherR
 }
 
 std::string SAMFile::alignment_to_CIGAR(std::string &dnaAligned, std::string &readAligned){
-	if (dnaAligned[0] != readAligned[0]){
-		std::cout << "First character of dnaAligned does not match the first character of readAligned! CIGAR will not be generated." << std::endl;
-		return "no cigar";
-	}
-
 	std::string cifar = "";
-	char lastmode = 'M'; //one of 'M' (match), 'I' (insert in reference), 'D' (deletion in reference), 'X' mismatch
+	char lastmode = '!'; //one of 'M' (match), 'I' (insert in reference), 'D' (deletion in reference), 'X' mismatch
 	char mode; 
-	int count = 1; 
+	int count; 
 	char c1, c2;
 		
-	for (unsigned int i=1; i < dnaAligned.length(); ++i){
+	for (unsigned int i=0; i < dnaAligned.length(); ++i){
 		c1 = dnaAligned[i];
 		c2 = readAligned[i];
 		
@@ -91,6 +86,9 @@ std::string SAMFile::alignment_to_CIGAR(std::string &dnaAligned, std::string &re
 		
 		if (mode == lastmode) {
 			++count;
+		} else if (lastmode == '!'){
+			lastmode = mode;
+			count = 1;
 		} else {
 			cifar += std::to_string(count);
 			cifar += lastmode;

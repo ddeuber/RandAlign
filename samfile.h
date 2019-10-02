@@ -77,7 +77,6 @@ class SAMFile {
 
 		/*
 		 * Converts a global alignment between a part of the reference sequence (dnaAligned) and the read (readAligned) into a CIGAR string. 
-		 * IMPORTANT: The first character has to be a match and must correspond to the position of the read in the dna. Otherwise the position of the read might be wrong.
 		 */	
 		static std::string alignment_to_CIGAR(std::string &dnaAligned, std::string &readAligned);
 };
