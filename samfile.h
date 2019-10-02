@@ -56,7 +56,7 @@ class SAMFile {
 		void close();
 
 		/*
-		 * The Following function adds two lines to the SAM file, one for each of the two reads. 
+		 * The Following function adds two lines corresponding to a read pair to the SAM file.
 		 * 
 		 * readName: name of read
 		 * readSeq1: nucleotide sequence of read1. IMPORTANT: if read1 is a reverse read, readSeq1 needs to be already reversed and inverted
