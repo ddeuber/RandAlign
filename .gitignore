@@ -1,2 +1,6 @@
 data_small/
 run.sh
+.depend
+*.o
+app
+bwt_old.c
