@@ -8,6 +8,7 @@
 #include <algorithm> 
 
 #include "bwt.h"
+#include "SuffixTree.h"
 
 using namespace std; 
 
@@ -39,27 +40,44 @@ bool indices_comparator(int a, int b) {
     return temp_str[(a + pos) % string_length] < temp_str[(b + pos) % string_length];
 }
 
-// TODO make this faster using Ukkonen's algorithm
+// make this faster using Ukkonen's algorithm
 void BWT::encode() {
+    SuffixTree tree;
+    tree.construct(this->reference);
+
     this->location_array = new int[this->reference.length()];
-    temp_str = this->reference;
-
-    string_length = this->reference.length();
-
-    for (int i = 0; i < string_length; ++i) {
-            location_array[i] = i;
-    }
-
-    sort(location_array, location_array + string_length, indices_comparator); 
-    
-    char *encoded_ptr = new char[string_length + 1];
-    for (unsigned long i = 0; i < this->reference.length(); ++i) {
-        encoded_ptr[i] = this->reference[(location_array[i] + string_length - 1) % string_length];
-    }    
-    encoded_ptr[string_length] = 0;
-
-    this->encoded = string(encoded_ptr);
+    this->encoded = tree.compute_transformation(this->location_array);
 }
+
+/* void BWT::encode() { */
+
+/*     this->location_array = new int[this->reference.length()]; */
+/*     temp_str = this->reference; */
+
+/*     string_length = this->reference.length(); */
+
+/*     for (int i = 0; i < string_length; ++i) { */
+/*             location_array[i] = i; */
+/*     } */
+
+/*     sort(location_array, location_array + string_length, indices_comparator); */ 
+    
+/*     char *encoded_ptr = new char[string_length + 1]; */
+/*     for (unsigned long i = 0; i < this->reference.length(); ++i) { */
+/*         encoded_ptr[i] = this->reference[(location_array[i] + string_length - 1) % string_length]; */
+/*     } */    
+/*     encoded_ptr[string_length] = 0; */
+
+/*     this->encoded = string(encoded_ptr); */
+
+
+/*     cout << this->encoded << endl; */
+
+/*     for (unsigned long i = 0; i < this->reference.length(); ++i) */
+/*         cout << location_array[i] << endl; */
+
+/*     exit(1); */
+/* } */
 
 bool comparator(int a, int b) {
     return temp_str[a] < temp_str[b];
@@ -195,6 +213,7 @@ block* BWT::get_matches(string test) {
     bl->start = start;
     bl->end = end;
 
+    cout << start << ' ' << end << endl;
     return bl;
 }
 
