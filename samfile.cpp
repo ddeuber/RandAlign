@@ -1,7 +1,7 @@
 #include "samfile.h"
 #include <iostream>
 
-SAMFile::SAMFile(std::string &fileName, std::string &refSeqName, int refSeqLength){
+SAMFile::SAMFile(std::string const &fileName, std::string const &refSeqName, int refSeqLength){
 	file.open(fileName);
 	file << "@HD\tN:1.4\tSO:unsorted\n";
 	file << "@SQ\tSN:" << refSeqName << "\tLN:" << refSeqLength << endline;
@@ -11,10 +11,10 @@ SAMFile::SAMFile(std::string &fileName, std::string &refSeqName, int refSeqLengt
 void SAMFile::close(){
 	file.close();
 }
-	
-void SAMFile::add_paired_read_entry(std::string &readName, std::string &readSeq1, std::string &qualSeq1, int pos1, std::string &cigar1,
-													std::string &readSeq2, std::string &qualSeq2, int pos2, std::string &cigar2,
-													bool read1Reversed, int mapQuality1, int mapQuality2){
+
+void SAMFile::add_paired_read_entry(std::string const &readName, std::string const &readSeq1, std::string const &qualSeq1, int pos1, std::string const &cigar1,
+										std::string const &readSeq2, std::string const &qualSeq2, int pos2, std::string const &cigar2,
+										bool read1Reversed, int mapQuality1, int mapQuality2){
 	int tempLen;
 	if (read1Reversed) {
 		tempLen = pos1 - pos2 + readSeq1.length();
@@ -27,7 +27,7 @@ void SAMFile::add_paired_read_entry(std::string &readName, std::string &readSeq1
 	}
 }
 
-void SAMFile::add_single_entry(std::string &readName, bool isRead1, std::string &readSeq, std::string &qualSeq, bool isReverse, int pos, std::string &cigar, int posNext,int tempLen, int mapQuality){
+void SAMFile::add_single_entry(std::string const &readName, bool isRead1, std::string const &readSeq, std::string const &qualSeq, bool isReverse, int pos, std::string const &cigar, int posNext, int tempLen, int mapQuality){
 	file << readName << tab;
 	file << generate_flag(pos, isReverse, isRead1, posNext) << tab; 
 	file << refSeqName << tab;
@@ -64,7 +64,7 @@ int  SAMFile::generate_flag(int pos, bool isReverse, bool isRead1, int posOtherR
 	return flag;
 }
 
-std::string SAMFile::alignment_to_CIGAR(std::string &dnaAligned, std::string &readAligned){
+std::string SAMFile::alignment_to_CIGAR(std::string const &dnaAligned, std::string const &readAligned){
 	std::string cifar = "";
 	char lastmode = '!'; //one of 'M' (match), 'I' (insert in reference), 'D' (deletion in reference), 'X' mismatch
 	char mode; 

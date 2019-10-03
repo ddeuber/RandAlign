@@ -27,7 +27,7 @@ class SAMFile {
 		 * mapQuality = −10 log10 Pr{mapping position is wrong}, mapQuality=255 means that mapping quality is not available. default is 99
 		 *
 		 */
-		void add_single_entry(std::string &readName, bool isRead1, std::string &readSeq, std::string &qualSeq, bool isReverse, int pos, std::string &cigar, int posNext, int tempLen, int mapQuality=99); 
+		void add_single_entry(std::string const &readName, bool isRead1, std::string const &readSeq, std::string const &qualSeq, bool isReverse, int pos, std::string const &cigar, int posNext, int tempLen, int mapQuality=99); 
 
 		/*
 		 * Generates FLAG for a read.
@@ -48,7 +48,7 @@ class SAMFile {
 		 * refSeqName: name of the reference sequence
 		 * refSeqLength: legnth of the reference sequence
 		 */
-		SAMFile(std::string &fileName, std::string &refSeqName, int refSeqLength);
+		SAMFile(std::string const &fileName, std::string const &refSeqName, int refSeqLength);
 
 		/*
 		 * File needs to be closed in order to flush the changes to disk.
@@ -71,14 +71,14 @@ class SAMFile {
 		 * mapQuality1/2 = −10 log10 Pr{mapping position is wrong} of read1/2, mapQuality=255 means that mapping quality is not available. default is 99
 		 *
 		 */
-		void add_paired_read_entry(std::string &readName, std::string &readSeq1, std::string &qaulSeq1, int pos1, std::string &cigar1,
-													std::string &readSeq2, std::string &qualSeq2, int pos2, std::string &cigar2,
+		void add_paired_read_entry(std::string const &readName, std::string const &readSeq1, std::string const &quallSeq1, int pos1, std::string const &cigar1,
+													std::string const &readSeq2, std::string const &qualSeq2, int pos2, std::string const &cigar2,
 													bool read1Reversed, int mapQuality1=99, int mapQuality2=99);
 
 		/*
 		 * Converts a global alignment between a part of the reference sequence (dnaAligned) and the read (readAligned) into a CIGAR string. 
 		 */	
-		static std::string alignment_to_CIGAR(std::string &dnaAligned, std::string &readAligned);
+		static std::string alignment_to_CIGAR(std::string const &dnaAligned, std::string const &readAligned);
 };
 
 #endif
