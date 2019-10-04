@@ -108,16 +108,15 @@ void print_matches(block* bl, string id, string test, BWT* bwt) {
         cout << "No matches found" << endl;
     else {
         // assume that from all matches the one corresponding to the least amount of mismatches is the allignment 
-
-        // foreach match, here only take first
         int pos = bwt->get_location(bl->start);
         int mismatches;
         
-        // chack that the position of seed found is not too close to the end of the string
+        // check that the position of seed found is not too close to the end of the string
         if (pos + test.length() > bwt->reference.length())
             mismatches = MISMATCHES_THRESHOLD + 1;
         else
             mismatches = number_of_mismatches(test, bwt->reference.substr(pos, test.length()));       
+
         for (int i = bl->start + 1; i <= bl->end; ++i) {
             int new_pos = bwt->get_location(i);
             if (new_pos + test.length() > bwt->reference.length())
@@ -134,7 +133,6 @@ void print_matches(block* bl, string id, string test, BWT* bwt) {
             cout << "No matches found" << endl;
             return;
         }
-
 
         // calculate score of match 
         // for start do not use minimum edit distance but assume only mismatches can be made and no insertions or deletions

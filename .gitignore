@@ -1,4 +1,5 @@
 data_small/
+data/
 run.sh
 .depend
 *.o

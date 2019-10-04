@@ -30,16 +30,6 @@ BWT::BWT(string rawString, bool is_encoded) {
     }   
 }
 
-bool indices_comparator(int a, int b) {
-    int pos = 0;
-
-    while (temp_str[(a + pos) % string_length] == temp_str[(b + pos) % string_length]){
-        pos ++;
-    }
-
-    return temp_str[(a + pos) % string_length] < temp_str[(b + pos) % string_length];
-}
-
 // make this faster using Ukkonen's algorithm
 void BWT::encode() {
     SuffixTree tree;
@@ -49,65 +39,46 @@ void BWT::encode() {
     this->encoded = tree.compute_transformation(this->location_array);
 }
 
-/* void BWT::encode() { */
-
-/*     this->location_array = new int[this->reference.length()]; */
-/*     temp_str = this->reference; */
-
-/*     string_length = this->reference.length(); */
-
-/*     for (int i = 0; i < string_length; ++i) { */
-/*             location_array[i] = i; */
-/*     } */
-
-/*     sort(location_array, location_array + string_length, indices_comparator); */ 
-    
-/*     char *encoded_ptr = new char[string_length + 1]; */
-/*     for (unsigned long i = 0; i < this->reference.length(); ++i) { */
-/*         encoded_ptr[i] = this->reference[(location_array[i] + string_length - 1) % string_length]; */
-/*     } */    
-/*     encoded_ptr[string_length] = 0; */
-
-/*     this->encoded = string(encoded_ptr); */
-
-
-/*     cout << this->encoded << endl; */
-
-/*     for (unsigned long i = 0; i < this->reference.length(); ++i) */
-/*         cout << location_array[i] << endl; */
-
-/*     exit(1); */
-/* } */
-
 bool comparator(int a, int b) {
     return temp_str[a] < temp_str[b];
 }
 
-// TODO make decode faster by using the location_array !!
-void BWT::decode(){
-    temp_str = this->encoded;
+// This function assumes that location_array is also stored, else use the one below
+void BWT::decode() {
+    unsigned long string_length = this->encoded.length();
+    cout << string_length << endl;
+    this->reference[string_length];
+    cout << "1" << endl;
 
-    int *indices = new int[this->encoded.length()];
-
-    for (unsigned long i = 0; i < this->encoded.length(); ++i) {
-      indices[i] = i;
-    }
-    
-    stable_sort(indices, indices + this->encoded.length(), comparator); 
-
-    int startIndex = 0;
-    for (; this->encoded[startIndex] != '$'; ++startIndex);
-
-    char *builder = new char[this->encoded.length() + 1];
-    for (unsigned long i = 0; i < this->encoded.length(); ++i) {
-        startIndex = indices[startIndex];
-        char c = this->encoded[startIndex];
-        builder[i] = c;
-    }
-    builder[this->encoded.length()] = 0;
-
-    this->reference = string(builder);
+    for (unsigned long i = 0; i < string_length; ++i)
+        this->reference[(this->location_array[i] + string_length - 1) % string_length] = this->encoded[i];
 }
+
+// TODO make decode faster by using the location_array !!
+/* void BWT::decode(){ */
+/*     temp_str = this->encoded; */
+
+/*     int *indices = new int[this->encoded.length()]; */
+
+/*     for (unsigned long i = 0; i < this->encoded.length(); ++i) { */
+/*       indices[i] = i; */
+/*     } */
+    
+/*     stable_sort(indices, indices + this->encoded.length(), comparator); */ 
+
+/*     int startIndex = 0; */
+/*     for (; this->encoded[startIndex] != '$'; ++startIndex); */
+
+/*     char *builder = new char[this->encoded.length() + 1]; */
+/*     for (unsigned long i = 0; i < this->encoded.length(); ++i) { */
+/*         startIndex = indices[startIndex]; */
+/*         char c = this->encoded[startIndex]; */
+/*         builder[i] = c; */
+/*     } */
+/*     builder[this->encoded.length()] = 0; */
+
+/*     this->reference = string(builder); */
+/* } */
 
 string compress(string str) {
     vector<char> compressed;
