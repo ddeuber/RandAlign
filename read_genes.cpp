@@ -12,9 +12,9 @@
 
 using namespace std;
 
-void getFile(string filename, /*out*/ ifstream& file);
+void getFile(const string& filename, /*out*/ ifstream& file);
 
-ReadGenes::ReadGenes(string filename_1, string filename_2) {
+ReadGenes::ReadGenes(const string& filename_1, const string& filename_2) {
     getFile(filename_1, this->file_1);
     getFile(filename_2, this->file_2);
 }
@@ -27,7 +27,7 @@ string join(const vector<string>& vec, const char* delim)
     return res.str();
 }
 
-string read_reference_gene(string filename){
+string read_reference_gene(const string& filename){
     string gene;
     vector<string> vector_genes;
 
@@ -48,7 +48,7 @@ string read_reference_gene(string filename){
     }
 }
 
-string extract_id(string s) {
+string extract_id(const string& s) {
     return s.substr(1, s.find("/") - 1);
 }
 
@@ -81,7 +81,7 @@ bool checkFileExistence(const string& filename)
     return f.is_open();
 }
     
-void getFile(string filename, /*out*/ ifstream& file)
+void getFile(const string& filename, /*out*/ ifstream& file)
 {
     const bool file_exists = checkFileExistence(filename);
     if (!file_exists) {
@@ -103,7 +103,7 @@ int number_of_mismatches(string s1, string s2) {
 }
 
 // TODO modify this method to add to file using SAM format!
-void print_matches(block* bl, string id, string test, BWT* bwt) {
+void print_matches(block* bl, const string& id, const string& test, BWT* bwt) {
     if (bl->start > bl->end)
         cout << "No matches found" << endl;
     else {
@@ -142,7 +142,7 @@ void print_matches(block* bl, string id, string test, BWT* bwt) {
 
 // Function to reverse a string and take its complement
 // TODO make this faster!
-string reverse_complement(string const &s)
+string reverse_complement(const string& s)
 {
     char *rev = new char[s.length()];
     for (unsigned long i = 0; i < s.length(); ++i)

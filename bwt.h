@@ -25,15 +25,14 @@ class BWT {
         std::string encoded;
 
         void encode();
-        // TODO decode should also get the location array matrix (or recover is threw a lot of computation..)
         void decode();
 	public:
         // create BWT by providing either the reference (is_encoded = false) or the encoded string (is_encoded = true)
-        BWT(std::string rawString, bool is_encoded);
+        BWT(std::string& rawString, bool is_encoded);
 
         std::string reference;
         
-        block* get_matches(std::string test);
+        block* get_matches(const std::string& test);
 
         // returns location in original string based on the location array 
         int get_location(int pos);

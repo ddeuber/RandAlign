@@ -17,10 +17,10 @@ std::map<char, int> mapOfGenes = {{'$', 0}, {'A', 1}, {'C', 2}, {'G', 3}, {'T', 
 std::map<char, char> map_complement = {{'A', 'T'}, {'C', 'G'}, {'G', 'C'}, {'T', 'A'}};
 
 // dummy variables used by the comparator
-string temp_str;
-int string_length;
+/* string temp_str; */
+/* int string_length; */
 
-BWT::BWT(string rawString, bool is_encoded) {
+BWT::BWT(string& rawString, bool is_encoded) {
     if (is_encoded){
         this->encoded = rawString;
         this->decode();
@@ -39,9 +39,9 @@ void BWT::encode() {
     this->encoded = tree.compute_transformation(this->location_array);
 }
 
-bool comparator(int a, int b) {
-    return temp_str[a] < temp_str[b];
-}
+/* bool comparator(int a, int b) { */
+/*     return temp_str[a] < temp_str[b]; */
+/* } */
 
 // This function assumes that location_array is also stored, else use the one below
 void BWT::decode() {
@@ -80,7 +80,7 @@ void BWT::decode() {
 /*     this->reference = string(builder); */
 /* } */
 
-string compress(string str) {
+string compress(const string& str) {
     vector<char> compressed;
 
     // previous_char == '*' means that no previous chars need to be stored
@@ -115,7 +115,7 @@ string compress(string str) {
     return string(compressed.begin(), compressed.end());
 }
 
-string uncompress(string str){
+string uncompress(const string str){
     vector<char> uncompressed;
 
     for (unsigned long int i = 0; i < str.length(); i += 2) {
@@ -126,7 +126,7 @@ string uncompress(string str){
     return string(uncompressed.begin(), uncompressed.end());
 }
 
-int* counts_table(string str) {
+int* counts_table(const string& str) {
     int* C = new int[NUM_BASES];
     fill_n(C, NUM_BASES, 0);
 
@@ -144,7 +144,7 @@ int* counts_table(string str) {
     return C;
 }
 
-int** occurrences_matrix(string str) {
+int** occurrences_matrix(const string& str) {
     int **Occ = new int*[str.length()];
     int current_values[NUM_BASES] = {0};
 
@@ -160,7 +160,7 @@ int** occurrences_matrix(string str) {
     return Occ;
 }
 
-block* BWT::get_matches(string test) {
+block* BWT::get_matches(const string& test) {
     int* C = counts_table(this->encoded);
     int** Occ = occurrences_matrix(this->encoded);
 

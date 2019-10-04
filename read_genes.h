@@ -17,19 +17,17 @@ typedef struct {
 } read_block;
 
 // reafactor these
-std::string reverse_complement(std::string const &s);
-void print_matches(block* bl, std::string id, std::string test, BWT* bwt);
+std::string reverse_complement(const std::string& s);
+void print_matches(block* bl, const std::string& id, const std::string& test, BWT* bwt);
 
-std::string read_reference_gene(std::string filename);
+std::string read_reference_gene(const std::string& filename);
 
 class ReadGenes {
     private:
-        std::string filename_1;
-        std::string filename_2;
         std::ifstream file_1;
         std::ifstream file_2;
     public:
-        ReadGenes(std::string filename_1, std::string filename_2);
+        ReadGenes(const std::string& filename_1, const std::string& filename_2);
         read_block* get_one_read();       
 };
 
