@@ -1,5 +1,6 @@
 data_small/
 data/
+.vscode/
 run.sh
 .depend
 *.o
