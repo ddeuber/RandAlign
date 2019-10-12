@@ -27,7 +27,7 @@ string join(const vector<string>& vec, const char* delim)
     return res.str();
 }
 
-string read_reference_gene(const string& filename){
+string read_reference_gene(const string& filename, string& refName){
     string gene;
     vector<string> vector_genes;
 
@@ -35,6 +35,7 @@ string read_reference_gene(const string& filename){
 
     if (read_file){
         getline (read_file, gene);
+		refName = gene.substr(1);
 
         while(getline(read_file, gene)) {
             vector_genes.push_back(gene);
@@ -97,13 +98,13 @@ int number_of_mismatches(string s1, string s2) {
     int mismatches = 0;
     for (unsigned long i = 0; i < s1.length(); ++i)
         if (s1[i] != s2[i])
-            mismatches ++;
+            mismatches ++;   
 
     return mismatches;
 }
 
 // TODO modify this method to add to file using SAM format!
-void print_matches(block* bl, const string& id, const string& test, BWT* bwt) {
+void print_matches(block* bl, const string& id, const string& test, BWT* bwt) {	
     if (bl->start > bl->end)
         cout << "No matches found" << endl;
     else {

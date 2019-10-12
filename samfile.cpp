@@ -21,7 +21,7 @@ void SAMFile::add_paired_read_entry(std::string const &readName, std::string con
 		add_single_entry(readName, true, readSeq1, qualSeq1, true, pos1, cigar1, pos2, -tempLen, mapQuality1);
 		add_single_entry(readName, false, readSeq2, qualSeq2, false, pos2, cigar2, pos1, tempLen, mapQuality2);
 	} else {
-		tempLen = pos1 - pos1 + readSeq2.length();
+		tempLen = pos2 - pos1 + readSeq2.length();
 		add_single_entry(readName, true, readSeq1, qualSeq1, false, pos1, cigar1, pos2, tempLen, mapQuality1);
 		add_single_entry(readName, false, readSeq2, qualSeq2, true, pos2, cigar2, pos1, -tempLen, mapQuality2);	
 	}
