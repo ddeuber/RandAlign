@@ -22,6 +22,10 @@ void SuffixTree::build(){
     activeEdge = -1;
 
     for(unsigned long i = 0; i < str.length(); ++i){
+        if (str[i] != '$' && str[i] != 'A' && str[i] != 'C' && str[i] != 'G' && str[i] != 'T'){
+            cout << "Character: " << str[i] << " not supported for building suffix tree" << endl;
+            exit(1);
+        }
         addSuffix(i);
     }
 }
