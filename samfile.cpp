@@ -3,8 +3,16 @@
 
 SAMFile::SAMFile(std::string const &fileName, std::string const &refSeqName, int refSeqLength){
 	file.open(fileName);
-	file << "@HD\tN:1.4\tSO:unsorted\n";
-	file << "@SQ\tSN:" << refSeqName << "\tLN:" << refSeqLength << endline;
+	file << "@HD\tN:1.4\tSO:unsorted";
+    for (int i=0; i<8; ++i)
+        file << tab;
+    file << endline;
+
+	file << "@SQ\tSN:" << refSeqName << "\tLN:" << refSeqLength;
+    for (int i=0; i<8; ++i)
+        file << tab;
+    file << endline;
+
 	this->refSeqName = refSeqName;
 }
 

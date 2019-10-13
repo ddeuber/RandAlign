@@ -17,13 +17,14 @@ int main(int argc, char** argv) {
 
 	string refName;
     string reference = read_reference_gene(argv[1], refName);
+    std::cout << reference << std::endl;
 
     BWT* bwt = new BWT(reference, false);
 
 	string input1(argv[2]);
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
-	SAMFile samFile(output, refName, reference.length());
+	SAMFile samFile(output, refName, reference.length()-1);
 	RandomizedAligner randAlign(bwt, &samFile);
    
     ReadGenes* rg = new ReadGenes(argv[2], argv[3]);
