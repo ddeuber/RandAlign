@@ -108,6 +108,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 		for (unsigned int i=0; i<N_SEEDS; ++i) {
 			unif = std::uniform_int_distribution<int>(0, n-seedLengths[i]-1);
 			seedStarts[i] = unif(generator);
+            std::cout << seedStarts[i] << std::endl;
 		}
 	} while( std::abs(seedStarts[0] - seedStarts[1]) < 20);
 
@@ -196,8 +197,8 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 	std::string rev1 = reverse_complement(read1);
 	std::string rev2 = reverse_complement(read2);
 
-	std::cout << read1 << std::endl;
-	std::cout << rev1 << std::endl; 
+    std::cout << rev1 << std::endl;
+	std::cout << rev2 << std::endl; 
 	
 	for(int i=0; i<maxIter; ++i){
 		// try out both reads as reverse reads
@@ -207,8 +208,8 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 		pos1rev = get_alignment_candidate(rev1, 20, cigar1rev, dist1rev);
 		pos2rev = get_alignment_candidate(rev2, 20, cigar2rev, dist2rev);
 
-		bool read1rev2 = (pos1 > 0) && (pos2rev>0) && std::abs(pos1 - pos2rev) < 600; // if combination read1 rev2 is possible
-		bool read2rev1 = (pos2 > 0) && (pos1rev>0) && std::abs(pos2 - pos1rev) < 600; // if combination read2 rev1 is possible
+		bool read1rev2 = (pos1 > 0) && (pos2rev>0) && std::abs(pos1 - pos2rev) < 450 + read1.length(); // if combination read1 rev2 is possible
+		bool read2rev1 = (pos2 > 0) && (pos1rev>0) && std::abs(pos2 - pos1rev) < 450 + read1.length(); // if combination read2 rev1 is possible
 	
 		if (!read1rev2 && !read2rev1)
 			continue;

@@ -17,7 +17,6 @@ int main(int argc, char** argv) {
 
 	string refName;
     string reference = read_reference_gene(argv[1], refName);
-    std::cout << reference << std::endl;
 
     BWT* bwt = new BWT(reference, false);
 
