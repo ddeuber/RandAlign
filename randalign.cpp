@@ -108,7 +108,6 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 		for (unsigned int i=0; i<N_SEEDS; ++i) {
 			unif = std::uniform_int_distribution<int>(0, n-seedLengths[i]-1);
 			seedStarts[i] = unif(generator);
-            std::cout << seedStarts[i] << std::endl;
 		}
 	} while( std::abs(seedStarts[0] - seedStarts[1]) < 20);
 
