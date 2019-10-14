@@ -3,7 +3,8 @@
 #include <string>
 #include <assert.h>
 #include <list>
-#include <bits/stdc++.h>
+#include <sstream>
+#include <vector>
 #include <map>
 #include <algorithm> 
 

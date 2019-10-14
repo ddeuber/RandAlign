@@ -1,3 +1,6 @@
+# OSX General
+.DS_Store
+
 data_small/
 data/
 run.sh

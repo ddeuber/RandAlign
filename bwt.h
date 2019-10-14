@@ -2,6 +2,9 @@
 #define BWT_H 
 
 #include <map>
+#include <string>
+#include <sstream>
+#include <iostream>
 
 #define SEED_LENGTH 12
 #define NUM_BASES 5
@@ -21,6 +24,9 @@ extern std::map<char, char> map_complement;
 
 class BWT {
 	private:
+        int* C; 
+        int** Occ; 
+        
         int* location_array;
         std::string encoded;
 

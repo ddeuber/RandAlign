@@ -4,7 +4,8 @@
 #include <assert.h>
 #include <list>
 #include <ctime>
-#include <bits/stdc++.h>
+#include <sstream>
+#include <vector>
 #include <algorithm> 
 
 #include "bwt.h"
@@ -20,6 +21,9 @@ std::map<char, char> map_complement = {{'A', 'T'}, {'C', 'G'}, {'G', 'C'}, {'T',
 /* string temp_str; */
 /* int string_length; */
 
+int* counts_table(const string& str);
+int** occurrences_matrix(const string& str); 
+
 BWT::BWT(string& rawString, bool is_encoded) {
     if (is_encoded){
         this->encoded = rawString;
@@ -27,6 +31,9 @@ BWT::BWT(string& rawString, bool is_encoded) {
     } else {
         this->reference = rawString;
         this->encode();
+
+        this->C = counts_table(this->encoded);
+        this->Occ = occurrences_matrix(this->encoded);
     }   
 }
 
@@ -161,8 +168,8 @@ int** occurrences_matrix(const string& str) {
 }
 
 block* BWT::get_matches(const string& test) {
-    int* C = counts_table(this->encoded);
-    int** Occ = occurrences_matrix(this->encoded);
+    // int* C = counts_table(this->encoded);
+    // int** Occ = occurrences_matrix(this->encoded);
 
     unsigned long i = test.length() - 1;
     int start = C[mapOfGenes[test[i]]];
@@ -172,12 +179,12 @@ block* BWT::get_matches(const string& test) {
     if (test[i] == 'T')
         end = this->encoded.length() - 1;
     else
-        end = C[mapOfGenes[test[i]] + 1] - 1;
+        end = this->C[mapOfGenes[test[i]] + 1] - 1;
 
     while (start <= end and i > 0) {
         --i;
-        start = C[mapOfGenes[test[i]]] + Occ[start - 1][mapOfGenes[test[i]]];
-        end = C[mapOfGenes[test[i]]] + Occ[end][mapOfGenes[test[i]]] - 1;
+        start = this->C[mapOfGenes[test[i]]] + this->Occ[start - 1][mapOfGenes[test[i]]];
+        end = this->C[mapOfGenes[test[i]]] + this->Occ[end][mapOfGenes[test[i]]] - 1;
     }
 
     block* bl = new block;
