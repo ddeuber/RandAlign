@@ -27,7 +27,9 @@ string join(const vector<string>& vec, const char* delim)
     return res.str();
 }
 
-string read_reference_gene(const string& filename){
+// returns the newly read genen and
+// a vector of pairs containing the starting position of each sequence of N's and the number of N's in this position
+string read_reference_gene(const string& filename, vector< pair<int, int> >& holes){
     string gene;
     vector<string> vector_genes;
 
@@ -41,7 +43,31 @@ string read_reference_gene(const string& filename){
         }
         vector_genes.push_back("$");
 
-        return join(vector_genes, "");
+        string str = join(vector_genes, "");
+
+        // find potential N's in the string
+        // all position should be relative to the new index
+        int i = 0;
+        int new_index = 0;
+
+        while (i < str.length()){
+            if (str[i] == 'N'){
+                int j = i + 1;
+                while(j < str.length() && str[j] == 'N'){
+                    j ++;
+                }
+
+                holes.push_back(make_pair(new_index, j - i));
+                i = j;
+            }
+            else {
+                ++i;
+                ++new_index;
+            }
+        }
+
+        str.erase(remove(str.begin(), str.end(), 'N'), str.end());
+        return str;
     } else {
         cout << "File: " << filename << "cannot be opened" << endl; 
         exit(ERROR_EXIT_CODE);
