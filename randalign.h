@@ -7,9 +7,12 @@
 #include "read_genes.h"
 
 int cost(char a, char b);
+int score(char a, char b);
 
 // returns edit distance and aligned strings are saved in s1aligned and a2aligned
 int global_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string &s2Aligned); 
+
+int quasi_local_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string &s2Aligned); 
 			 
 class RandomizedAligner {
 	private:

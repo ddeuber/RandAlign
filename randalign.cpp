@@ -18,6 +18,97 @@ int cost(char a, char b) {
 		return 1;
 }
 
+int score(char a, char b){
+	if (a==b)
+		return 1;
+	else if (a=='-' || b=='-')
+		return -1;
+	else
+		return 0;
+}	
+
+// returns negative score to be compatible with editDistance
+// s1 should be longer than s2
+int quasi_local_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string& s2Aligned) {
+	int table[s1.length()+1][s2.length()+1];
+
+	int IMIN = std::numeric_limits<int>::min();
+
+	// initialize border
+	table[0][0] = 0;
+	for (unsigned int i=1; i<=s1.length(); ++i)
+		table[i][0] = 0;
+	for (unsigned int i=1; i<=s2.length(); ++i)
+		table[0][i] = IMIN/2;
+
+	int v1, v2, v3;
+
+	// fill table
+	for (unsigned int i=1; i<=s1.length(); ++i){
+		for (unsigned int j=1; j<=s2.length(); ++j){
+			v1 = table[i-1][j-1] + score(s1[i-1], s2[j-1]);
+			v2 = table[i-1][j] + score(s1[i-1], '-');
+			v3 = table[i][j-1] + score('-', s2[j-1]);
+			table[i][j] = std::max(std::max(v1,v2), v3);
+		}
+	}
+
+	int maxscore = IMIN;
+	int value; 
+	int maxindexi = -1;
+	int maxindexj = -1;
+
+	for (int i=0; i<=s1.length(); ++i){
+		for (int j=0; j<=s2.length(); ++j) {
+			value = table[i][j];
+			if (value > maxscore) {
+				maxscore = value;
+				maxindexi = i;
+				maxindexj = j;
+			}
+		}
+	}
+	
+	// find optimal alignment
+	int v;
+	int i = maxindexi;
+	int j = maxindexj;
+	std::string a1 = "";
+	std::string a2 = "";
+
+	while(j > 0 && i>=0) {
+		v = table[i][j];
+		
+		v1 = (i>0 && j>0) ? table[i-1][j-1] + score(s1[i-1], s2[j-1]) : IMIN;
+		v2 = (i>0) ? table[i-1][j] + score(s1[i-1], '-') : IMIN;
+		v3 = (j>0) ? table[i][j-1] + score('-', s2[j-1]) : IMIN;
+
+		if (v == v1) {
+			a1 += s1[i-1];
+			a2 += s2[j-1];
+			--i;
+			--j;
+		} else if (v == v2) {
+			a1 += s1[i-1];
+			a2 += '-';
+			--i;
+		} else {
+			a1 += '-';
+			a2 += s2[j-1];
+			--j;
+		}
+	}
+	
+	std::reverse(a1.begin(), a1.end());
+	std::reverse(a2.begin(), a2.end());
+
+	s1Aligned = s1.substr(0, i) + a1 + s1.substr(maxindexi);
+	s2Aligned = std::string(i, '-') + a2 + s2.substr(maxindexj);
+	s2Aligned.resize(s1Aligned.length(), '-');
+
+	return maxscore; 
+}
+
 int global_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string& s2Aligned) {
 	// For simplicity, the Needleman-Wunsch algorithm is used
 	int table[s1.length()+1][s2.length()+1];
@@ -161,9 +252,10 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 	std::string refSeq;
 
 	for (unsigned int i=0; i<npos; ++i){
-		refPos[i] = std::max(pairPositions[i]-seedStarts[0], 0); 
-		refSeq = bwt->reference.substr(refPos[i], read.length());
-		editDistances[i] = global_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
+		refPos[i] = std::max(pairPositions[i]-seedStarts[0]-15, 0); 
+		refSeq = bwt->reference.substr(refPos[i], read.length()+15);
+		// editDistances[i] = global_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
+		editDistances[i] = quasi_local_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
 	}
 
 	int* minDist = std::min_element(editDistances, editDistances + npos);
