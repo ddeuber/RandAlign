@@ -7,7 +7,6 @@
 
 using namespace std;
 
-// std::map<char, int> mapOfGenes = {{'$', 0}, {'A', 1}, {'C', 2}, {'G', 3}, {'T', 4}};
 
 void SuffixTree::build(){
     // initializations
@@ -28,7 +27,7 @@ void SuffixTree::build(){
 
 int SuffixTree::tryNextCharacter(int i){
     // returns the next character if exists in the tree or -1 for the creation of a new edge
-    SuffixNode* node = selectNode();
+    SuffixNode* node = getNode();
 
     int lengthOfEdge = edgeLength(node);
     
@@ -52,8 +51,8 @@ int SuffixTree::tryNextCharacter(int i){
     }
 }
 
-void SuffixTree::walkDown(int i){
-    SuffixNode* node = selectNode();
+void SuffixTree::traverse(int i){
+    SuffixNode* node = getNode();
 
     if (edgeLength(node) < activeLength){
         activeNode = node;
@@ -65,11 +64,11 @@ void SuffixTree::walkDown(int i){
 }
 
 
-SuffixNode* SuffixTree::selectNode() {
+SuffixNode* SuffixTree::getNode() {
     return activeNode->children[mapOfGenes[str[activeEdge]]]; 
 }
 
-SuffixNode* SuffixTree::selectNode(int index) { 
+SuffixNode* SuffixTree::getNode(int index) { 
     return activeNode->children[mapOfGenes[str[index]]]; 
 }
 
@@ -85,7 +84,7 @@ void SuffixTree::addSuffix(int i){
         // cout << "remaining: " << remaining << endl;
         if (activeLength == 0){
             // we are at root
-            SuffixNode* node = selectNode(i);
+            SuffixNode* node = getNode(i);
             if (node != nullptr){
                 // RULE 3 extension
                 activeEdge = node->start;
@@ -104,12 +103,12 @@ void SuffixTree::addSuffix(int i){
             if (char(nextChar) == str[i]){
                 // cout << "Found it" << endl;
                 if (lastCreated != nullptr)
-                    lastCreated->suffixLink = selectNode();
+                    lastCreated->suffixLink = getNode();
 
-                walkDown(i);
+                traverse(i);
                 break;
             } else if (nextChar < 0){
-                SuffixNode* node = selectNode();
+                SuffixNode* node = getNode();
                 node->children[mapOfGenes[str[i]]] = new SuffixNode(i, current_end);
 
                 if (lastCreated != nullptr)
@@ -128,7 +127,7 @@ void SuffixTree::addSuffix(int i){
             } else{
                 // cout << "Adding internal node.." << endl;
                 // RULE 2
-                SuffixNode* node = selectNode();
+                SuffixNode* node = getNode();
                 int oldStart = node->start;
                 node->start = node->start + activeLength;
 
@@ -161,8 +160,7 @@ void SuffixTree::addSuffix(int i){
     }
 }
 
-
-
+// creates the bwt string and also creates the lcoation array needed
 string SuffixTree::bwt(int* location_array){
     unsigned long str_len = str.length();
 
@@ -175,6 +173,12 @@ string SuffixTree::bwt(int* location_array){
     return string(transformation);
 }
 
+/*** recurrently creates bwt string and location array 
+ * @param node current node
+ * @param val current distance from root for node
+ * @param size lenfth of the string
+ * @param *pos current index to set for bwt and location array (this is based on the sorted suffixes)
+*/
 void SuffixTree::bwt(SuffixNode* node, int val, int size, unsigned long* pos, char* transformation, int* location_array){
     if (node == nullptr)
         return;

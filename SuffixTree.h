@@ -31,9 +31,9 @@ class SuffixTree {
         int activeLength;
 
         void addSuffix(int);
-        void walkDown(int);
-        SuffixNode* selectNode();
-        SuffixNode* selectNode(int);
+        void traverse(int);
+        SuffixNode* getNode();
+        SuffixNode* getNode(int);
         int edgeLength(SuffixNode* node) { return *(node->end) - node->start; }
         int tryNextCharacter(int i);
 

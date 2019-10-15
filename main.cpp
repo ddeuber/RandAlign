@@ -36,27 +36,6 @@ int main(int argc, char** argv) {
     vector< pair<int, int> > holes;
     string reference = read_reference_gene(argv[1], holes);
 
-    for(vector< pair<int, int> >::size_type i = 0; i != holes.size(); i++) {
-        cout << holes[i].first << " " << holes[i].second << endl;
-    }
-
-    cout << "The total length of the string is " << reference.length() << endl;    
-
-    cout << "0 " << convert_index_to_original_index(0, holes) << endl;
-    cout << "647850 " << convert_index_to_original_index(647850, holes) << endl;
-    cout << "2978253 " << convert_index_to_original_index(2978253, holes) << endl;
-    cout << "2978255 " << convert_index_to_original_index(2978255, holes) << endl;
-
-
-    exit(1);
-
-
-
-
-
-
-
-
     BWT* bwt = new BWT(reference, false);
    
     ReadGenes* rg = new ReadGenes(argv[2], argv[3]);
