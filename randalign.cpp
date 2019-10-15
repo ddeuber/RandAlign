@@ -195,8 +195,6 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 	std::string &qualSeq2 = rb->backward_read_quality;
 	std::string rev1 = reverse_complement(read1);
 	std::string rev2 = reverse_complement(read2);
-	
-	bwt->get_matches(read1);
 
 	for(int i=0; i<maxIter; ++i){
 		// try out both reads as reverse reads
