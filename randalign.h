@@ -24,7 +24,7 @@ class RandomizedAligner {
 		int get_alignment_candidate(std::string const& read, int meanSeedLength, std::string& cigarOutput, int &editDistance);
 
 		// align and print into SAMFile
-		void align_and_print(read_block* rb, int maxIter=10);
+		void align_and_print(read_block* rb, int maxIter=100);
 };
 
 #endif
