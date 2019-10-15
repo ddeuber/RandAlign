@@ -29,7 +29,7 @@ int global_alignment(std::string const &s1, std::string const &s2, std::string& 
 	for (unsigned int i=1; i<=s1.length(); ++i)
 		table[i][0] = table[i-1][0] + cost('A', '-');
 	for (unsigned int i=1; i<=s2.length(); ++i)
-		table[0][i] = table[i-1][0] + cost('-', 'A');
+		table[0][i] = table[0][i-1] + cost('-', 'A');
 
 	int v1, v2, v3;
 
@@ -195,10 +195,9 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 	std::string &qualSeq2 = rb->backward_read_quality;
 	std::string rev1 = reverse_complement(read1);
 	std::string rev2 = reverse_complement(read2);
-
-    std::cout << rev1 << std::endl;
-	std::cout << rev2 << std::endl; 
 	
+	bwt->get_matches(read1);
+
 	for(int i=0; i<maxIter; ++i){
 		// try out both reads as reverse reads
 		pos1 = get_alignment_candidate(read1, 20, cigar1, dist1);
