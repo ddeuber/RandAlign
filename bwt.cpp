@@ -13,8 +13,8 @@
 
 using namespace std; 
 
-
 std::map<char, int> mapOfGenes = {{'$', 0}, {'A', 1}, {'C', 2}, {'G', 3}, {'T', 4}};
+
 std::map<char, char> map_complement = {{'A', 'T'}, {'C', 'G'}, {'G', 'C'}, {'T', 'A'}};
 
 // dummy variables used by the comparator
@@ -39,11 +39,11 @@ BWT::BWT(string& rawString, bool is_encoded) {
 
 // make this faster using Ukkonen's algorithm
 void BWT::encode() {
-    SuffixTree tree;
-    tree.construct(this->reference);
+    SuffixTree* tree = new SuffixTree(this->reference);
+    tree->build();
 
     this->location_array = new int[this->reference.length()];
-    this->encoded = tree.compute_transformation(this->location_array);
+    this->encoded = tree->bwt(location_array);
 }
 
 /* bool comparator(int a, int b) { */

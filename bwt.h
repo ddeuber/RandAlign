@@ -17,9 +17,8 @@ typedef struct {
 } block;
 
 
-// map from symbols to ints
 extern std::map<char, int> mapOfGenes;
-// map of complementary genes
+
 extern std::map<char, char> map_complement;
 
 class BWT {

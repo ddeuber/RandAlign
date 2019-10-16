@@ -1,45 +1,48 @@
-// Copyright (c) 2012 Adam Serafini
+#ifndef SUFFIXTREE_H
+#define SUFFIXTREE_H
 
-#ifndef SRC_SUFFIXTREE_H_
-#define SRC_SUFFIXTREE_H_
+#include <map>
+#include "bwt.h"
 
-#include <string>
-#include <vector>
+class SuffixNode {
+    friend class SuffixTree;
+    private:
+        SuffixNode* children[5];
+        SuffixNode* suffixLink;
 
-class Suffix;
-class Node;
-class SuffixTree {
- public:
-  SuffixTree();
-  void construct(std::string);
-  std::string compute_transformation(int* location_array);
-  char get_char_at_index(int) const;
+        bool internalNode;
+        int start;
+        int* end;
 
- private:
-  std::string tree_string;
-  unsigned long tree_string_size;
-  void compute_transformation_node(Node* parent, char* transformation, unsigned long* pos, int* location_array);
-  std::string get_substr(int, int);
-  // Suffix Extension rules (Gusfield, 1997)
-  enum Rule {RULE_2, RULE_3};
+    public:
+        SuffixNode(int s, int* e): start(s), end(e), children() {internalNode = false;};
 
-  // SPA: Single Phase Algorithm (Gusfield, 1997)
-  void SPA(int);
-
-  // SEA: Single Extension Algorithm (Gusfield, 1997)
-  Rule SEA(Suffix&, int, int);
-
-  // The 'skip/count' trick for traversal (Gusfield, 1997)
-  Suffix get_suffix(Node*, int, int);
-
-  // Apply Suffix Extension Rule 2 (Gusfield, 1997)
-  void RULE2(Suffix&, int, int);
-
-  Node* root;
-  int internal_node_ID;
-  int length;
-  int* current_end;
-  Node* last_leaf_extension;
 };
 
-#endif  // SRC_SUFFIXTREE_H_
+class SuffixTree {
+    private:
+        std::string str;
+        SuffixNode* root;
+        int remaining;
+        int* current_end;
+
+        SuffixNode* activeNode;
+        int activeEdge;
+        int activeLength;
+
+        void addSuffix(int);
+        void traverse(int);
+        SuffixNode* getNode();
+        SuffixNode* getNode(int);
+        int edgeLength(SuffixNode* node) { return *(node->end) - node->start; }
+        int tryNextCharacter(int i);
+
+        void bwt(SuffixNode*, int, int, unsigned long*, char*, int*);
+    public:
+        SuffixTree(std::string s): str(s) {};
+        std::string bwt(int*);
+
+        void build();
+};
+
+#endif

@@ -20,7 +20,7 @@ typedef struct {
 std::string reverse_complement(const std::string& s);
 void print_matches(block* bl, const std::string& id, const std::string& test, BWT* bwt);
 
-std::string read_reference_gene(const std::string& filename, std::string& refName);
+std::string read_reference_gene(const std::string& filename, std::string& refName, std::vector< std::pair<int, int> >& holes);
 
 class ReadGenes {
     private:
