@@ -5,6 +5,7 @@
 #include <list>
 #include <sstream>
 #include <vector>
+#include <iterator>
 #include <map>
 #include <algorithm> 
 

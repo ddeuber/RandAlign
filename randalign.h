@@ -3,6 +3,7 @@
 
 #include "bwt.h"
 #include <string>
+#include <vector>
 #include "samfile.h"
 #include "read_genes.h"
 
