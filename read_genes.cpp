@@ -173,11 +173,11 @@ void print_matches(block* bl, const string& id, const string& test, BWT* bwt) {
 // TODO make this faster!
 string reverse_complement(const string& s)
 {
-    char *rev = new char[s.length()];
+    char *rev = new char[s.length() + 1];
     for (unsigned long i = 0; i < s.length(); ++i)
         rev[i] = map_complement[s[s.length() - 1 - i]];
 
-    
+    rev[s.length()] = '\0';
 	/* string rev(s1.rbegin(), s1.rend()); */
 	return string(rev);
 }
