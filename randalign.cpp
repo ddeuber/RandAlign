@@ -106,7 +106,7 @@ int quasi_local_alignment(std::string const &s1, std::string const &s2, std::str
 	s2Aligned = std::string(i, '-') + a2 + s2.substr(maxindexj);
 	s2Aligned.resize(s1Aligned.length(), '-');
 
-	return maxscore; 
+	return -maxscore + (int)s2.length(); 
 }
 
 int global_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string& s2Aligned) {
@@ -246,6 +246,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 	// compare edit distance of found matches, find optimal one
 	int npos = pairPositions.size();
 	int editDistances[npos];
+	int weights[npos];
 	int refPos[npos];
 	std::string dnaAligned[npos];
 	std::string readAligned[npos];
@@ -256,6 +257,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 			refPos[i] = std::max(pairPositions[i]-seedStarts[0], 0); 
 			refSeq = bwt->reference.substr(refPos[i], read.length());
 			editDistances[i] = number_of_mismatches(refSeq, read); 
+			weights[i] = std::max((int)read.length()-2*(editDistances[i]), 0);
 			dnaAligned[i] = refSeq;
 			readAligned[i] = read;
 		} else {
@@ -263,18 +265,23 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 			refSeq = bwt->reference.substr(refPos[i], read.length()+30);
 			// editDistances[i] = global_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
 			editDistances[i] = quasi_local_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
+			weights[i] = std::max((int)read.length()-2*(editDistances[i]), 0);
 		}
 	}
 
 	int* minDist = std::min_element(editDistances, editDistances + npos);
 	editDistance = *minDist;
 	int optimalMatch = minDist - editDistances; 
-	
+
 	// if mismatchesOnly, return nothing found if there are more than 5 mismatches
 	if (mismatchOnly) {
 		if (editDistance > 5)
 			return -1;
 	}
+	
+	std::discrete_distribution<int> categorical(weights, weights+npos);
+	optimalMatch = categorical(generator);
+	editDistance = editDistances[optimalMatch];
 
 	// find position where read starts in alignment
 	int readStart = readAligned[optimalMatch].find_first_not_of('-');
@@ -354,8 +361,9 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 	
 	// if failed.
 	std::cout << "Failed for read " << rb->id << std::endl;
-	std::cout << pos1 << " " << pos2rev << "\t" << cigar1 << " " << cigar2rev << std::endl;
-	std::cout << pos2 << " " << pos1rev << "\t" << cigar2 << " " << cigar1rev << std::endl;
+	std::cout << pos1 << " " << pos2rev << "\t" << cigar1 << " " << cigar2rev << "\t" << dist1 << " " << dist2rev << std::endl;
+	std::cout << pos2 << " " << pos1rev << "\t" << cigar2 << " " << cigar1rev << "\t" << dist2 << " " << dist1rev << std::endl;
+	std::cout << std::endl;
 	samFile->add_paired_read_entry(rb->id, read1, qualSeq1, 0, "*", rev2, qualSeq2, 0, "*", false);
 }
  
