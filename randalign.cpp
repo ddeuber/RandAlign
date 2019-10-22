@@ -178,7 +178,7 @@ RandomizedAligner::RandomizedAligner(BWT* bwt, SAMFile* samFile){
 	this->samFile = samFile;
 }
 
-int RandomizedAligner::get_alignment_candidate(std::string const& read, int meanSeedLength, std::string &cigarOutput, int &editDistance){
+int RandomizedAligner::get_alignment_candidate(std::string const& read, int meanSeedLength, std::string &cigarOutput, int &editDistance, bool mismatchOnly){
 	int n = read.length();
 	double p = 1.0 * meanSeedLength / n;
 	int N_SEEDS = 2;
@@ -252,10 +252,18 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 	std::string refSeq;
 
 	for (unsigned int i=0; i<npos; ++i){
-		refPos[i] = std::max(pairPositions[i]-seedStarts[0]-15, 0); 
-		refSeq = bwt->reference.substr(refPos[i], read.length()+15);
-		// editDistances[i] = global_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
-		editDistances[i] = quasi_local_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
+		if (mismatchOnly){
+			refPos[i] = std::max(pairPositions[i]-seedStarts[0], 0); 
+			refSeq = bwt->reference.substr(refPos[i], read.length());
+			editDistances[i] = number_of_mismatches(refSeq, read); 
+			dnaAligned[i] = refSeq;
+			readAligned[i] = read;
+		} else {
+			refPos[i] = std::max(pairPositions[i]-seedStarts[0]-15, 0); 
+			refSeq = bwt->reference.substr(refPos[i], read.length()+30);
+			// editDistances[i] = global_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
+			editDistances[i] = quasi_local_alignment(refSeq, read, dnaAligned[i], readAligned[i]);
+		}
 	}
 
 	int* minDist = std::min_element(editDistances, editDistances + npos);
@@ -290,11 +298,11 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 
 	for(int i=0; i<maxIter; ++i){
 		// try out both reads as reverse reads
-		pos1 = get_alignment_candidate(read1, 20, cigar1, dist1);
-		pos2 = get_alignment_candidate(read2, 20, cigar2, dist2);
+		pos1 = get_alignment_candidate(read1, 20, cigar1, dist1, true);
+		pos2 = get_alignment_candidate(read2, 20, cigar2, dist2, true);
 		
-		pos1rev = get_alignment_candidate(rev1, 20, cigar1rev, dist1rev);
-		pos2rev = get_alignment_candidate(rev2, 20, cigar2rev, dist2rev);
+		pos1rev = get_alignment_candidate(rev1, 20, cigar1rev, dist1rev, true);
+		pos2rev = get_alignment_candidate(rev2, 20, cigar2rev, dist2rev, true);
 
 		bool read1rev2 = (pos1 > 0) && (pos2rev>0) && std::abs(pos1 - pos2rev) < 450 + read1.length(); // if combination read1 rev2 is possible
 		bool read2rev1 = (pos2 > 0) && (pos1rev>0) && std::abs(pos2 - pos1rev) < 450 + read1.length(); // if combination read2 rev1 is possible

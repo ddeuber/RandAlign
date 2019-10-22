@@ -19,6 +19,7 @@ typedef struct {
 // reafactor these
 std::string reverse_complement(const std::string& s);
 void print_matches(block* bl, const std::string& id, const std::string& test, BWT* bwt);
+int number_of_mismatches(const std::string &s1, const std::string& s2);
 
 std::string read_reference_gene(const std::string& filename, std::string& refName, std::vector< std::pair<int, int> >& holes);
 

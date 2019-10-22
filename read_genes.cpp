@@ -120,7 +120,7 @@ void getFile(const string& filename, /*out*/ ifstream& file)
     file.open(filename.c_str());
 }
 
-int number_of_mismatches(string s1, string s2) {
+int number_of_mismatches(const string &s1, const string& s2) {
 
     // assume len(s1) == len(s2) 
     int mismatches = 0;
