@@ -56,8 +56,8 @@ int main(int argc, char** argv) {
         if (rb == NULL)
             break;
             
-        cout << "---------------------------------------------" << endl;
-        cout << rb->id << endl;
+        //cout << "---------------------------------------------" << endl;
+        //cout << rb->id << endl;
 
 		randAlign.align_and_print(rb);
 

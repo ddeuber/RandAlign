@@ -221,7 +221,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 
 	// take matches where the distance betweend seed1 and seed2 is more or less preserved (up to MAX_SHIFT)
 	// Note that this works because the positions are sorted.
-	int MAX_SHIFT = 15;
+	int MAX_SHIFT = mismatchOnly ? 0 : 15;
 	std::vector<int> pairPositions;
 	int i=0;
 	int j=0;
@@ -233,7 +233,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 		
 		if (p1-p0 < seedStarts[1] - seedStarts[0] - MAX_SHIFT) // p1 before p0 or distance is to small
 			++j;
-		else if (p1-p0 < seedStarts[1] - seedStarts[0] + MAX_SHIFT) { //distance is right
+		else if (p1-p0 <= seedStarts[1] - seedStarts[0] + MAX_SHIFT) { //distance is right
 			pairPositions.push_back(p0);
 			++i;
 		} else // distance is to big
@@ -270,6 +270,11 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, int mean
 	editDistance = *minDist;
 	int optimalMatch = minDist - editDistances; 
 	
+	// if mismatchesOnly, return nothing found if there are more than 5 mismatches
+	if (mismatchOnly) {
+		if (editDistance > 5)
+			return -1;
+	}
 
 	// find position where read starts in alignment
 	int readStart = readAligned[optimalMatch].find_first_not_of('-');
@@ -296,13 +301,27 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 	std::string rev1 = reverse_complement(read1);
 	std::string rev2 = reverse_complement(read2);
 
+	bool mismatchOnly;
+	int meanSeedLength = 15;
+
 	for(int i=0; i<maxIter; ++i){
 		// try out both reads as reverse reads
-		pos1 = get_alignment_candidate(read1, 20, cigar1, dist1, true);
-		pos2 = get_alignment_candidate(read2, 20, cigar2, dist2, true);
+		mismatchOnly = i < maxIter/2;
+
+		pos1 = get_alignment_candidate(read1, meanSeedLength, cigar1, dist1, mismatchOnly);
+		pos2 = get_alignment_candidate(read2, meanSeedLength, cigar2, dist2, mismatchOnly);
 		
-		pos1rev = get_alignment_candidate(rev1, 20, cigar1rev, dist1rev, true);
-		pos2rev = get_alignment_candidate(rev2, 20, cigar2rev, dist2rev, true);
+		pos1rev = get_alignment_candidate(rev1, meanSeedLength, cigar1rev, dist1rev, mismatchOnly);
+		pos2rev = get_alignment_candidate(rev2, meanSeedLength, cigar2rev, dist2rev, mismatchOnly);
+
+		for (int j=0; j<5 && pos1 >= 0 && pos2rev == -1; ++j)
+			pos2rev = get_alignment_candidate(rev2, meanSeedLength, cigar2rev, dist2rev, mismatchOnly);
+		for (int j=0; j<5 && pos2rev >= 0 && pos1 == -1; ++j)
+			pos1 = get_alignment_candidate(read1, meanSeedLength, cigar1, dist1, mismatchOnly);
+		for (int j=0; j<5 && pos2 >= 0 && pos1rev == -1; ++j)
+			pos1rev = get_alignment_candidate(rev1, meanSeedLength, cigar1rev, dist1rev, mismatchOnly);
+		for (int j=0; j<5 && pos1rev >= 0 && pos2 == -1; ++j)
+			pos2 = get_alignment_candidate(read2, meanSeedLength, cigar2, dist2, mismatchOnly);
 
 		bool read1rev2 = (pos1 > 0) && (pos2rev>0) && std::abs(pos1 - pos2rev) < 450 + read1.length(); // if combination read1 rev2 is possible
 		bool read2rev1 = (pos2 > 0) && (pos1rev>0) && std::abs(pos2 - pos1rev) < 450 + read1.length(); // if combination read2 rev1 is possible
@@ -334,6 +353,9 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 	}
 	
 	// if failed.
+	std::cout << "Failed for read " << rb->id << std::endl;
+	std::cout << pos1 << " " << pos2rev << "\t" << cigar1 << " " << cigar2rev << std::endl;
+	std::cout << pos2 << " " << pos1rev << "\t" << cigar2 << " " << cigar1rev << std::endl;
 	samFile->add_paired_read_entry(rb->id, read1, qualSeq1, 0, "*", rev2, qualSeq2, 0, "*", false);
 }
  

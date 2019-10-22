@@ -25,7 +25,7 @@ class RandomizedAligner {
 
 		// returns position of possible match, -1 if nothing is found. The according cigar string is stored in cigarOutput, and the edit distance in editDistance
 		// Note that the actual mean of the seeds will be meanSeedLength + 5
-		int get_alignment_candidate(std::string const& read, int meanSeedLength, std::string& cigarOutput, int &editDistance);
+		int get_alignment_candidate(std::string const& read, int meanSeedLength, std::string& cigarOutput, int &editDistance, bool mismatchOnly);
 
 		// align and print into SAMFile
 		void align_and_print(read_block* rb, int maxIter=100);

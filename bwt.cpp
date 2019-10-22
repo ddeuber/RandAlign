@@ -191,7 +191,7 @@ block* BWT::get_matches(const string& test) {
     bl->start = start;
     bl->end = end;
 
-    cout << start << ' ' << end << endl;
+    //cout << start << ' ' << end << endl;
     return bl;
 }
 
