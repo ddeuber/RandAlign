@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
 	string input1(argv[2]);
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
+	// TODO: calculate reference lengt with NN
 	SAMFile samFile(output, refName, reference.length()-1);
 	RandomizedAligner randAlign(bwt, &samFile);
    
