@@ -4,7 +4,15 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <vector>
 #include <iostream>
+
+// files where the index will be stored
+#define LOCATION_ARRAY_FILENAME "location_array"
+#define COUNTS_ARRAY_FILENAME "counts_array"
+#define OCCURRENCES_MATRIX_FILENAME "occurrences_matrix"
+#define HOLES_FILENAME "holes"
+#define FILENAME_TYPE ".save"
 
 #define SEED_LENGTH 12
 #define NUM_BASES 5
@@ -31,16 +39,27 @@ class BWT {
 
         void encode();
         void decode();
+
+        void recover_encoded_string(int);
+        void recover_index(const std::string&);
+
 	public:
-        // create BWT by providing either the reference (is_encoded = false) or the encoded string (is_encoded = true)
-        BWT(std::string& rawString, bool is_encoded);
+        std::vector< std::pair<int, int> > holes;
+
+        // create BWT and index
+        BWT(std::string&, std::vector< std::pair<int, int> >);
+
+        // create BWT by reading index from filesystem
+        BWT(const std::string&);
+
+        void store_index(const std::string&);
 
         std::string reference;
         
-        block* get_matches(const std::string& test);
+        block* get_matches(const std::string&);
 
         // returns location in original string based on the location array 
-        int get_location(int pos);
+        int get_location(int);
 };
 
 #endif

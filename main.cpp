@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
-
+#include <string.h>
+#include <algorithm>
 #include "bwt.h"
 #include "read_genes.h"
 #include "samfile.h"
@@ -27,27 +28,100 @@ int convert_index_to_original_index(int index, vector< pair<int, int> > holes) {
 }
 
 
+char* getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
+
+bool cmdOptionExists(char** begin, char** end, const std::string& option)
+{
+    return std::find(begin, end, option) != end;
+}
+
+
 int main(int argc, char** argv) {
 
-    if (argc != 4) {
-        cout << "Usage: " << argv[0] << "<reference_gene_file> <reads_gene_file_1> <reads_gene_file_2>" << endl;
+    if (argc < 2){
+        cout << "No option provided" << endl;
+    }
+
+    string refName;
+    // vector that contains pairs of positions and lengths on sequences of N's
+    vector< pair<int, int> > holes;
+    string reference;
+    BWT* bwt;
+
+    /* available options
+       index: create index, store and exit
+            ./<appname> index <genome_file> .
+       index_run: create index, store and run
+            ./<appname> index_run <genome_file> <read_file_1> <read_file_2>
+       recover: recover the index and run
+            ./<appname> recover <read_file_1> <read_file_2>
+       run: just run
+            ./<appname> run <genome_file> <read_file_1> <read_file_2>
+    */
+    if ((strcmp(argv[1], "index") == 0 && argc != 3) || (strcmp(argv[1], "index_run") == 0&& argc != 5) \
+     || (strcmp(argv[1], "recover") == 0 && argc != 4) || (strcmp(argv[1], "run") == 0&& argc != 5)){
+         cout << "Invalid number of arguments" << endl;
+         exit(1);
+     }
+
+
+    int allignment_file_index;
+
+    if (strcmp(argv[1], "index") == 0 || strcmp(argv[1], "index_run") == 0){
+        
+        cout << "Creating index in directory: \"index\"" << endl;
+
+        reference = read_reference_gene(argv[2], refName, holes);
+        bwt = new BWT(reference, holes);
+
+        bwt->store_index("index");
+
+        if (strcmp(argv[1], "index") == 0){
+            cout << "Created index and exiting" << endl;
+            return 0;
+        }
+
+        // to get files with allignments skip first 2 words corresponding to the words "index" and <file_with_genome>
+        allignment_file_index = 3;
+
+    } else if (strcmp(argv[1], "recover") == 0){
+        string directory;
+        cout << "Recovering index from directory: \"index\"" << endl;
+
+        bwt = new BWT("index");
+
+        // to get files with allignments skip first 1 word corresponding to the words "recover"
+        allignment_file_index = 2;
+    } else if (strcmp(argv[1], "run") == 0){
+        // in this case create the index and run
+        reference = read_reference_gene(argv[2], refName, holes);
+        bwt = new BWT(reference, holes);
+
+        // to get files with allignments skip first 1 word corresponding to the words "recover"
+        allignment_file_index = 3;
+    } else {
+        cout << "Unkownn option: " << argv[1] << ". Exiting.." << endl;
         exit(1);
     }
 
-	string refName;
-    // vector that contains pairs of positions and lengths on sequences of N's
-    vector< pair<int, int> > holes;
-    string reference = read_reference_gene(argv[1], refName, holes);
+    cout << "Running allignment" << endl;
 
-    BWT* bwt = new BWT(reference, false);
 
-	string input1(argv[2]);
+	string input1(argv[allignment_file_index]);
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
 	SAMFile samFile(output, refName, reference.length()-1);
 	RandomizedAligner randAlign(bwt, &samFile);
    
-    ReadGenes* rg = new ReadGenes(argv[2], argv[3]);
+    ReadGenes* rg = new ReadGenes(argv[allignment_file_index], argv[allignment_file_index + 1]);
 
     string seed, reverse_complement_str;
     //block * bl;

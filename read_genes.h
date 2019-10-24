@@ -16,6 +16,9 @@ typedef struct {
     std::string backward_read_quality;
 } read_block;
 
+bool checkFileExistence(const std::string&);
+void getFile(const std::string&, /*out*/ std::ifstream&);
+
 // reafactor these
 std::string reverse_complement(const std::string& s);
 void print_matches(block* bl, const std::string& id, const std::string& test, BWT* bwt);
