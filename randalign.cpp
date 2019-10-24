@@ -236,7 +236,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, std::str
 
 	// take matches where the distance betweend seed1 and seed2 is more or less preserved (up to MAX_SHIFT)
 	// Note that this works because the positions are sorted.
-	int MAX_SHIFT = mismatchOnly ? 0 : 15;
+	int MAX_SHIFT = mismatchOnly ? 0 : 3;
 	std::vector<int> pairPositions;
 	int i=0;
 	int j=0;
