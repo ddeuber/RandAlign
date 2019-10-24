@@ -70,6 +70,7 @@ string read_reference_gene(const string& filename, string& refName, vector< pair
         }
 
         str.erase(remove(str.begin(), str.end(), 'N'), str.end());
+        read_file.close();
         return str;
     } else {
         cout << "File: " << filename << "cannot be opened" << endl; 
