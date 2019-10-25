@@ -80,8 +80,7 @@ int main(int argc, char** argv) {
         
         cout << "Creating index in directory: \"index\"" << endl;
 
-        // reference = read_reference_gene(argv[2], refName, refLength, holes);
-        reference = read_reference_gene(argv[2], refName, holes);
+        reference = read_reference_gene(argv[2], refName, refLength, holes);
         bwt = new BWT(reference, holes);
 
         bwt->store_index("index");
@@ -104,8 +103,7 @@ int main(int argc, char** argv) {
         allignment_file_index = 2;
     } else if (strcmp(argv[1], "run") == 0){
         // in this case create the index and run
-        // reference = read_reference_gene(argv[2], refName, refLength, holes);
-        reference = read_reference_gene(argv[2], refName, holes);
+        reference = read_reference_gene(argv[2], refName, refLength, holes);
         bwt = new BWT(reference, holes);
 
         // to get files with allignments skip first 1 word corresponding to the words "recover"
