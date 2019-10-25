@@ -70,6 +70,12 @@ void BWT::recover_encoded_string(int string_length){
             }
         }
     }
+
+    // also recostruct the reference string
+    this->reference.resize(string_length);
+    for (int i = 0; i < string_length; i ++){
+        this->reference[(this->location_array[i] +string_length - 1) % string_length] = this->encoded[i];
+    }
 }
 
 // This function assumes that location_array is also stored, else use the one below

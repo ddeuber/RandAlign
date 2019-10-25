@@ -1,6 +1,7 @@
 # OSX General
 .DS_Store
 
+index/
 data_small/
 data/
 .vscode/
