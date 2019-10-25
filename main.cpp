@@ -120,8 +120,6 @@ int main(int argc, char** argv) {
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
     
-    refLength = bwt->reference.length();
-
 	SAMFile samFile(output, refName, refLength);
 	RandomizedAligner randAlign(bwt, &samFile);
    
