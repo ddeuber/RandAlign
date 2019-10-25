@@ -51,6 +51,7 @@ int main(int argc, char** argv) {
     }
 
     string refName;
+	int refLength;
     // vector that contains pairs of positions and lengths on sequences of N's
     vector< pair<int, int> > holes;
     string reference;
@@ -79,7 +80,7 @@ int main(int argc, char** argv) {
         
         cout << "Creating index in directory: \"index\"" << endl;
 
-        reference = read_reference_gene(argv[2], refName, holes);
+        reference = read_reference_gene(argv[2], refName, refLength, holes);
         bwt = new BWT(reference, holes);
 
         bwt->store_index("index");
@@ -102,7 +103,7 @@ int main(int argc, char** argv) {
         allignment_file_index = 2;
     } else if (strcmp(argv[1], "run") == 0){
         // in this case create the index and run
-        reference = read_reference_gene(argv[2], refName, holes);
+        reference = read_reference_gene(argv[2], refName, refLength, holes);
         bwt = new BWT(reference, holes);
 
         // to get files with allignments skip first 1 word corresponding to the words "recover"
@@ -118,7 +119,7 @@ int main(int argc, char** argv) {
 	string input1(argv[allignment_file_index]);
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
-	SAMFile samFile(output, refName, reference.length()-1);
+	SAMFile samFile(output, refName, refLength);
 	RandomizedAligner randAlign(bwt, &samFile);
    
     ReadGenes* rg = new ReadGenes(argv[allignment_file_index], argv[allignment_file_index + 1]);
