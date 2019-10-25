@@ -28,20 +28,20 @@ int convert_index_to_original_index(int index, vector< pair<int, int> > holes) {
 }
 
 
-char* getCmdOption(char ** begin, char ** end, const std::string & option)
-{
-    char ** itr = std::find(begin, end, option);
-    if (itr != end && ++itr != end)
-    {
-        return *itr;
-    }
-    return 0;
-}
+// char* getCmdOption(char ** begin, char ** end, const std::string & option)
+// {
+//     char ** itr = std::find(begin, end, option);
+//     if (itr != end && ++itr != end)
+//     {
+//         return *itr;
+//     }
+//     return 0;
+// }
 
-bool cmdOptionExists(char** begin, char** end, const std::string& option)
-{
-    return std::find(begin, end, option) != end;
-}
+// bool cmdOptionExists(char** begin, char** end, const std::string& option)
+// {
+//     return std::find(begin, end, option) != end;
+// }
 
 
 int main(int argc, char** argv) {
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 
     /* available options
        index: create index, store and exit
-            ./<appname> index <genome_file> .
+            ./<appname> index <genome_file> 
        index_run: create index, store and run
             ./<appname> index_run <genome_file> <read_file_1> <read_file_2>
        recover: recover the index and run
@@ -80,7 +80,8 @@ int main(int argc, char** argv) {
         
         cout << "Creating index in directory: \"index\"" << endl;
 
-        reference = read_reference_gene(argv[2], refName, refLength, holes);
+        // reference = read_reference_gene(argv[2], refName, refLength, holes);
+        reference = read_reference_gene(argv[2], refName, holes);
         bwt = new BWT(reference, holes);
 
         bwt->store_index("index");
@@ -103,7 +104,8 @@ int main(int argc, char** argv) {
         allignment_file_index = 2;
     } else if (strcmp(argv[1], "run") == 0){
         // in this case create the index and run
-        reference = read_reference_gene(argv[2], refName, refLength, holes);
+        // reference = read_reference_gene(argv[2], refName, refLength, holes);
+        reference = read_reference_gene(argv[2], refName, holes);
         bwt = new BWT(reference, holes);
 
         // to get files with allignments skip first 1 word corresponding to the words "recover"
@@ -119,6 +121,9 @@ int main(int argc, char** argv) {
 	string input1(argv[allignment_file_index]);
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
+    
+    refLength = bwt->reference.length();
+
 	SAMFile samFile(output, refName, refLength);
 	RandomizedAligner randAlign(bwt, &samFile);
    
