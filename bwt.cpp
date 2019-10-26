@@ -63,10 +63,11 @@ void BWT::recover_encoded_string(int string_length){
     }
 
     // fill in rest of the characters
-    for(int i = 0; i < string_length; i ++){
+    for(int i = 1; i < string_length; i ++){
         for (int j = 0; j < NUM_BASES; j ++){
-            if (this->Occ[i][j] > this->Occ[i][j]){
-                this->encoded[0] = mapOfNumbers[j];
+            if (this->Occ[i][j] > this->Occ[i - 1][j]){
+                this->encoded[i] = mapOfNumbers[j];
+                break;
             }
         }
     }
@@ -221,6 +222,7 @@ void BWT::recover_index(const string& directory){
     file_holes.close();
 
     recover_encoded_string(*string_length);
+
 }
 
 // TODO make decode faster by using the location_array !!
