@@ -2,6 +2,7 @@
 #include <vector>
 #include <string.h>
 #include <algorithm>
+#include <cstdlib>
 #include "bwt.h"
 #include "read_genes.h"
 #include "samfile.h"
@@ -10,8 +11,7 @@
 
 using namespace std;
 
-#define PARALLEL_READS 4
-
+// #define PARALLEL_READS 4096
 
 // takes as input a number that corresponds to a position to the current reference gene (after preprocessing the N's)
 // and returns the relative position on the original string
@@ -132,14 +132,25 @@ int main(int argc, char** argv) {
     unsigned real_count; 
     bool finished = false; 
     string seed, reverse_complement_str;
+ 
+    //Read enviromental variable 
+    int par_reads;
+    char *v=getenv("PARALLEL_READS");
+    if(v==NULL){
+        par_reads=4096; //set default chunk size
+    }else{
+        par_reads=atoi(v); //convert string to integer
+    }
 
-    read_block * read_array[PARALLEL_READS]; 
-    results_block * res_block[PARALLEL_READS]; 
+    cout << "par_reads: " << par_reads << endl; 
+
+    read_block * read_array[par_reads]; 
+    results_block * res_block[par_reads];
 
     while (!finished) {
         // Initialize
         real_count = 0u; 
-        for(int i=0; i<PARALLEL_READS; i++){
+        for(int i=0; i<par_reads; i++){
             read_block* rb = rg->get_one_read();
             if (rb == NULL){
                 finished = true; 
