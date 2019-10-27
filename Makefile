@@ -3,6 +3,9 @@ appname := app
 CXX := clang++
 CXXFLAGS := -std=c++11
 
+# Supress assert statments, compiler optimizations
+CPPFLAGS += -DNDEBUG=1 -O3
+
 srcfiles := $(shell find . -name "*.cpp")
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
 
