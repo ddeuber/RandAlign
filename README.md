@@ -1,3 +1,12 @@
+Install tbb dependencies if not already installed:
+- git clone https://github.com/wjakob/tbb.git
+- cd tbb/build
+- cmake ..
+- make -j
+- sudo make install
+- LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+- export LD_LIBRARY_PATH
+
 To run:
 
 index: create index, store and exit
