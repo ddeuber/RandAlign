@@ -7,6 +7,21 @@
 #include "samfile.h"
 #include "read_genes.h"
 
+typedef struct{
+	bool failed; 
+	// Read 1
+	std::string readSeq1; 
+	std::string qualSeq1; 
+	int pos1; 
+	std::string cigar1; 
+	// Read 2
+	std::string readSeq2; 
+	std::string qualSeq2; 
+	int pos2; 
+	std::string cigar2; 
+	bool read1Reversed; 
+} results_block; 
+
 int cost(char a, char b);
 int score(char a, char b);
 
@@ -34,7 +49,7 @@ class RandomizedAligner {
 		void get_alignment_candidates(std::string const& read, std::string const& qualString, int meanSeedLength, int maxShift, int maxDistance, std::vector<int> &refPositions, std::vector<std::string> &cigarStrings, std::vector<int> &editDistances, bool mismatchOnly);
 
 		// align and print into SAMFile
-		void align_and_print(read_block* rb, int maxIter=100);
+		results_block* align_and_print(read_block* rb, int maxIter=100);
 		void optimal_align_and_print(read_block* rb, int maxIter=10);
 };
 

@@ -428,8 +428,10 @@ void RandomizedAligner::get_alignment_candidates(std::string const& read, std::s
 	
 }
 																								   
-void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
-	
+results_block* RandomizedAligner::align_and_print(read_block* rb, int maxIter){
+	// Return variable 
+	results_block* res_block = new results_block; 
+
 	int pos1, pos1rev;
 	int pos2, pos2rev;
 	int dist1, dist1rev;
@@ -497,22 +499,71 @@ void RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 			
 			if(distsum1 <= distsum2){
 				std::reverse(qualSeq2.begin(), qualSeq2.end());
-				samFile->add_paired_read_entry(rb->id, read1, qualSeq1, pos1+1, cigar1, rev2, qualSeq2, pos2rev+1, cigar2rev, false);
-				return;
+				// Write to output 
+				res_block->failed = false; 
+				// Read 1
+				res_block->readSeq1 = read1; 
+				res_block->qualSeq1 = qualSeq1; 
+				res_block->pos1 = pos1+1;
+				res_block->cigar1 = cigar1; 
+
+				//Read 2
+				res_block->readSeq2 = rev2; 
+				res_block->qualSeq2 = qualSeq2; 
+				res_block->pos2 = pos2rev+1;
+				res_block->cigar2 = cigar2rev; 
+
+				res_block->read1Reversed = false; 
+
+				return res_block;
 			} else {
 				std::reverse(qualSeq1.begin(), qualSeq1.end());
-				samFile->add_paired_read_entry(rb->id, rev1, qualSeq1, pos1rev+1, cigar1rev, read2, qualSeq2, pos2+1, cigar2, true);
-				return;
+				// Write to output 
+				res_block->failed = false; 
+				// Read 1
+				res_block->readSeq1 = rev1; 
+				res_block->qualSeq1 = qualSeq1; 
+				res_block->pos1 = pos1rev+1;
+				res_block->cigar1 = cigar1rev; 
+
+				//Read 2
+				res_block->readSeq2 = read2; 
+				res_block->qualSeq2 = qualSeq2; 
+				res_block->pos2 = pos2+1;
+				res_block->cigar2 = cigar2; 
+
+				res_block->read1Reversed = true; 
+
+				return res_block; 
 			}
 		}
 	}
+
+	// If failed
+
+	// Write to output 
+	res_block->failed = true; 
+	// Read 1
+	res_block->readSeq1 = read1; 
+	res_block->qualSeq1 = qualSeq1; 
+	res_block->pos1 = 0;
+	res_block->cigar1 = "*"; 
+
+	//Read 2
+	res_block->readSeq2 = rev2; 
+	res_block->qualSeq2 = qualSeq2; 
+	res_block->pos2 = 0;
+	res_block->cigar2 = "*"; 
+
+	res_block->read1Reversed = false; 
 	
-	// if failed.
-	std::cout << "Failed for read " << rb->id << std::endl;
-	std::cout << pos1 << " " << pos2rev << "\t" << cigar1 << " " << cigar2rev << "\t" << dist1 << " " << dist2rev << std::endl;
-	std::cout << pos2 << " " << pos1rev << "\t" << cigar2 << " " << cigar1rev << "\t" << dist2 << " " << dist1rev << std::endl;
-	std::cout << std::endl;
-	samFile->add_paired_read_entry(rb->id, read1, qualSeq1, 0, "*", rev2, qualSeq2, 0, "*", false);
+	// std::cout << "Failed for read " << rb->id << std::endl;
+	// std::cout << pos1 << " " << pos2rev << "\t" << cigar1 << " " << cigar2rev << "\t" << dist1 << " " << dist2rev << std::endl;
+	// std::cout << pos2 << " " << pos1rev << "\t" << cigar2 << " " << cigar1rev << "\t" << dist2 << " " << dist1rev << std::endl;
+	// std::cout << std::endl;
+	// samFile->add_paired_read_entry(rb->id, read1, qualSeq1, 0, "*", rev2, qualSeq2, 0, "*", false);
+
+	return res_block;
 }
  
 

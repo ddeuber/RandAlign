@@ -3,6 +3,9 @@ appname := app
 CXX := clang++
 CXXFLAGS := -std=c++11
 
+# Link in the TBB libraries
+LDLIBS += -ltbb
+
 srcfiles := $(shell find . -name "*.cpp")
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
 
