@@ -7,7 +7,10 @@
 #include "read_genes.h"
 #include "samfile.h"
 #include "randalign.h"
+
+#if PARALLEL_RUN
 #include "tbb/parallel_for.h"
+#endif
 
 using namespace std;
 
@@ -30,22 +33,6 @@ int convert_index_to_original_index(int index, vector< pair<int, int> > holes) {
 
     return new_index;
 }
-
-
-// char* getCmdOption(char ** begin, char ** end, const std::string & option)
-// {
-//     char ** itr = std::find(begin, end, option);
-//     if (itr != end && ++itr != end)
-//     {
-//         return *itr;
-//     }
-//     return 0;
-// }
-
-// bool cmdOptionExists(char** begin, char** end, const std::string& option)
-// {
-//     return std::find(begin, end, option) != end;
-// }
 
 
 int main(int argc, char** argv) {
@@ -161,12 +148,17 @@ int main(int argc, char** argv) {
                 ++real_count; 
             }
         }
-        
+
+#if PARALLEL_RUN
         /* Parallel Execution */
         tbb::parallel_for(0u, (unsigned)real_count, [&](unsigned i){
             res_block[i] = randAlign.align_and_print(read_array[i]);
-
         });
+#else 
+        for(int i = 0; i < real_count; i++){
+            res_block[i] = randAlign.align_and_print(read_array[i]);
+        }
+#endif
 		
         /* Print to SAMFle */
         for(int i=0; i<real_count; i++){
