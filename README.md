@@ -7,6 +7,11 @@ Install tbb dependencies if not already installed:
 - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 - export LD_LIBRARY_PATH
 
+To compile:
+- make PARALLEL=0 # to run serial version
+- make PARALLEL=1 # to run parallel version
+
+
 To run:
 
 index: create index, store and exit
