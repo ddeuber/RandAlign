@@ -2,12 +2,19 @@
 #include <vector>
 #include <string.h>
 #include <algorithm>
+#include <cstdlib>
 #include "bwt.h"
 #include "read_genes.h"
 #include "samfile.h"
 #include "randalign.h"
 
+#if PARALLEL_RUN
+#include "tbb/parallel_for.h"
+#endif
+
 using namespace std;
+
+// #define PARALLEL_READS 4096
 
 // takes as input a number that corresponds to a position to the current reference gene (after preprocessing the N's)
 // and returns the relative position on the original string
@@ -26,22 +33,6 @@ int convert_index_to_original_index(int index, vector< pair<int, int> > holes) {
 
     return new_index;
 }
-
-
-// char* getCmdOption(char ** begin, char ** end, const std::string & option)
-// {
-//     char ** itr = std::find(begin, end, option);
-//     if (itr != end && ++itr != end)
-//     {
-//         return *itr;
-//     }
-//     return 0;
-// }
-
-// bool cmdOptionExists(char** begin, char** end, const std::string& option)
-// {
-//     return std::find(begin, end, option) != end;
-// }
 
 
 int main(int argc, char** argv) {
@@ -125,37 +116,68 @@ int main(int argc, char** argv) {
    
     ReadGenes* rg = new ReadGenes(argv[allignment_file_index], argv[allignment_file_index + 1]);
 
+    unsigned real_count; 
+    bool finished = false; 
     string seed, reverse_complement_str;
-    //block * bl;
-    while (true) {
-        read_block* rb = rg->get_one_read();
-        if (rb == NULL)
-            break;
-            
-        //cout << "---------------------------------------------" << endl;
-        //cout << rb->id << endl;
+ 
+    //Read enviromental variable 
+    int par_reads;
+    char *v=getenv("PARALLEL_READS");
+    if(v==NULL){
+        par_reads=4096; //set default chunk size
+    }else{
+        par_reads=atoi(v); //convert string to integer
+    }
 
-		randAlign.align_and_print(rb);
+    cout << "par_reads: " << par_reads << endl; 
 
-		/*
-        seed = rb->forward_read.substr(0, SEED_LENGTH);
-        bl = bwt->get_matches(seed);
-        print_matches(bl, rb->id, rb->forward_read, bwt);
+    read_block * read_array[par_reads]; 
+    results_block * res_block[par_reads];
 
-        seed = rb->backward_read.substr(0, SEED_LENGTH);
-        bl = bwt->get_matches(seed);
-        print_matches(bl, rb->id, rb->backward_read, bwt);
+    while (!finished) {
+        // Initialize
+        real_count = 0u; 
+        for(int i=0; i<par_reads; i++){
+            read_block* rb = rg->get_one_read();
+            if (rb == NULL){
+                finished = true; 
+                break; 
+            }
+            else {
+                read_array[i] = rb; 
+                ++real_count; 
+            }
+        }
 
-        reverse_complement_str = reverse_complement(rb->forward_read);
-        seed = reverse_complement_str.substr(0, SEED_LENGTH);
-        bl = bwt->get_matches(seed);
-        print_matches(bl, rb->id, reverse_complement_str, bwt);
-
-        reverse_complement_str = reverse_complement(rb->backward_read);
-        seed = reverse_complement_str.substr(0, SEED_LENGTH);
-        bl = bwt->get_matches(seed);
-        print_matches(bl, rb->id, reverse_complement_str, bwt);
-		*/
+#if PARALLEL_RUN
+        /* Parallel Execution */
+        tbb::parallel_for(0u, (unsigned)real_count, [&](unsigned i){
+            res_block[i] = randAlign.align_and_print(read_array[i]);
+        });
+#else 
+        for(int i = 0; i < real_count; i++){
+            res_block[i] = randAlign.align_and_print(read_array[i]);
+        }
+#endif
+		
+        /* Print to SAMFle */
+        for(int i=0; i<real_count; i++){
+            if (res_block[i]->failed){
+                std::cout << "Failed for read " << read_array[i]->id << std::endl;
+                std::cout << std::endl;
+            }
+            samFile.add_paired_read_entry(
+                        read_array[i]->id, 
+                        res_block[i]->readSeq1, 
+                        res_block[i]->qualSeq1, 
+                        res_block[i]->pos1, 
+                        res_block[i]->cigar1, 
+                        res_block[i]->readSeq2, 
+                        res_block[i]->qualSeq2, 
+                        res_block[i]->pos2, 
+                        res_block[i]->cigar2, 
+                        res_block[i]->read1Reversed);
+        }
     }
 
 	samFile.close();
