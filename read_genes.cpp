@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <string.h>
 #include <assert.h>
 #include <list>
 #include <sstream>
@@ -55,6 +56,12 @@ string read_reference_gene(const string& filename, string& refName, int &refLeng
         int new_index = 0;
 
         while (i < str.length()){
+            // check consistency of reference gene
+            if (!strchr("NACGT$", str[i])){
+                cout << "Invalid chacater " << str[i] << " encountered at input reference string. Exiting ..." << endl;
+                exit(1);
+            }
+
             if (str[i] == 'N'){
                 int j = i + 1;
                 while(j < str.length() && str[j] == 'N'){
@@ -83,6 +90,16 @@ string extract_id(const string& s) {
     return s.substr(1, s.find("/") - 1);
 }
 
+// check consistency for read
+void check_consistent_read(string str){
+    for (int i = 0; i < str.length(); ++i){
+        if (!strchr("ACGT", str[i])){
+            cout << "Invalid chacater " << str[i] << " encountered at read string. Exiting ..." << endl;
+            exit(1);
+        }
+    }
+}
+
 read_block* ReadGenes::get_one_read(){
     read_block* rb = new read_block;
 
@@ -91,12 +108,16 @@ read_block* ReadGenes::get_one_read(){
         rb->id = extract_id(rb->forward_read);
 
         getline(file_1, rb->forward_read);
+        check_consistent_read(rb->forward_read);
+        
         getline(file_1, rb->forward_read_quality);
         getline(file_1, rb->forward_read_quality);
 
         getline(file_2, rb->backward_read);
         assert(!extract_id(rb->backward_read).compare(rb->id));
         getline(file_2, rb->backward_read);
+        check_consistent_read(rb->backward_read);
+
         getline(file_2, rb->backward_read_quality);
         getline(file_2, rb->backward_read_quality);
     } catch(std::out_of_range e){
