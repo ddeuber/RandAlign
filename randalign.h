@@ -22,19 +22,21 @@ typedef struct{
 	bool read1Reversed; 
 } results_block; 
 
-int cost(char a, char b);
+/*
+ * Score for local alignment.
+ */
 int score(char a, char b);
 
-// returns edit distance and aligned strings are saved in s1aligned and a2aligned
-int global_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string &s2Aligned); 
-
+/*
+ * The string s1 should be longer than s2.
+ * The following algorithm is a slight adaptation of the Smith–Waterman algorithm.
+ * The difference is that the whole sequence s2 is aligned to s1, not only a substring.
+ * Also there will not be any insertions at the beginning of s2.
+ * The function returns (negative score + readlength), so this can be used as an edit distance.
+ */
 int quasi_local_alignment(std::string const &s1, std::string const &s2, std::string& s1Aligned, std::string &s2Aligned); 
 
-std::vector<std::pair<int, int>> get_matching_pairs(const std::vector<int> &first, const std::vector<int> &second, int minDist, int maxDist);
-std::pair<int, int> optimal_pair(const std::vector<std::pair<int, int>> &pairs, const std::vector<int> &distFirst, const std::vector<int> &distSecond);
 
-int distance(std::pair<int, int> pair);
-			 
 class RandomizedAligner {
 	private:
 		BWT* bwt;
@@ -44,13 +46,12 @@ class RandomizedAligner {
 		RandomizedAligner(BWT* bwt, SAMFile* samfile);
 
 		// returns position of possible match, -1 if nothing is found. The according cigar string is stored in cigarOutput, and the edit distance in editDistance
-		// Note that the actual mean of the seeds will be meanSeedLength + 5
+		// Note that the actual mean of the seeds will be meanSeedLength + 10 
 		int get_alignment_candidate(std::string const& read, std::string const& qualString, int meanSeedLength, int maxDist, std::string& cigarOutput, int &editDistance, bool mismatchOnly);
 		void get_alignment_candidates(std::string const& read, std::string const& qualString, int meanSeedLength, int maxShift, int maxDistance, std::vector<int> &refPositions, std::vector<std::string> &cigarStrings, std::vector<int> &editDistances, bool mismatchOnly);
 
 		// align and print into SAMFile
 		results_block* align_and_print(read_block* rb, int maxIter=100);
-		void optimal_align_and_print(read_block* rb, int maxIter=10);
 };
 
 #endif
