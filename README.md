@@ -11,7 +11,6 @@ To compile:
 - make PARALLEL=0 # to run serial version
 - make PARALLEL=1 # to run parallel version
 
-
 To run:
 
 index: create index, store and exit

@@ -110,6 +110,7 @@ int main(int argc, char** argv) {
 	string input1(argv[allignment_file_index]);
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
+    cout << "Storing results at " << output << endl; 
     
 	SAMFile samFile(output, refName, refLength);
 	RandomizedAligner randAlign(bwt, &samFile);
@@ -129,7 +130,7 @@ int main(int argc, char** argv) {
         par_reads=atoi(v); //convert string to integer
     }
 
-    cout << "par_reads: " << par_reads << endl; 
+    cout << "Total reads performed in parallel: " << par_reads << endl; 
 
     read_block * read_array[par_reads]; 
     results_block * res_block[par_reads];
