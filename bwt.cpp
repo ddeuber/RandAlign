@@ -155,6 +155,7 @@ vector< pair<int, int> > deserialize_vector(istream& file){
     return holes;
 }
 
+
 // we have to store the location_array, the counts table and the occurences matrix, as well as the holes
 // TODO should we also store the encoded? probably no ...
 void BWT::store_index(const string& directory){
@@ -362,3 +363,23 @@ block* BWT::get_matches(const string& test) {
 int BWT::get_location(int pos) {
     return this->location_array[pos];
 }
+
+// takes as input a number that corresponds to a position to the current reference gene (after preprocessing the N's)
+// and returns the relative position on the original string
+// TODO This function could be done much faster using a binary search scheme.
+// Is this really necessary? In the large genome file only around 10 regions of N's can be spotted
+int BWT::convert_index_to_original_index(int index) {
+    
+    int new_index = index;
+
+    for(vector< pair<int, int> >::size_type i = 0; i != holes.size(); i++) {
+        if (index >= holes[i].first)
+            new_index += holes[i].second;
+        else
+            break;
+    }
+
+    return new_index;
+}
+
+

@@ -16,25 +16,6 @@ using namespace std;
 
 // #define PARALLEL_READS 4096
 
-// takes as input a number that corresponds to a position to the current reference gene (after preprocessing the N's)
-// and returns the relative position on the original string
-// TODO This function could be done much faster using a binary search scheme.
-// Is this really necessary? In the large genome file only around 10 regions of N's can be spotted
-int convert_index_to_original_index(int index, vector< pair<int, int> > holes) {
-    
-    int new_index = index;
-
-    for(vector< pair<int, int> >::size_type i = 0; i != holes.size(); i++) {
-        if (index >= holes[i].first)
-            new_index += holes[i].second;
-        else
-            break;
-    }
-
-    return new_index;
-}
-
-
 int main(int argc, char** argv) {
 
     if (argc < 2){
@@ -42,7 +23,6 @@ int main(int argc, char** argv) {
     }
 
     string refName;
-	int refLength;
     // vector that contains pairs of positions and lengths on sequences of N's
     vector< pair<int, int> > holes;
     string reference;
@@ -71,7 +51,7 @@ int main(int argc, char** argv) {
         
         cout << "Creating index in directory: \"index\"" << endl;
 
-        reference = read_reference_gene(argv[2], refName, refLength, holes);
+        reference = read_reference_gene(argv[2], refName, holes);
         bwt = new BWT(reference, holes);
 
         bwt->store_index("index");
@@ -94,7 +74,7 @@ int main(int argc, char** argv) {
         allignment_file_index = 2;
     } else if (strcmp(argv[1], "run") == 0){
         // in this case create the index and run
-        reference = read_reference_gene(argv[2], refName, refLength, holes);
+        reference = read_reference_gene(argv[2], refName, holes);
         bwt = new BWT(reference, holes);
 
         // to get files with allignments skip first 1 word corresponding to the words "recover"
@@ -111,7 +91,11 @@ int main(int argc, char** argv) {
 	string output = input1.substr(0, input1.length()-4);
 	output += ".generated.mod.sam";
     cout << "Storing results at " << output << endl; 
-    
+
+    int refLength = bwt->reference.length() - 1;
+	for (auto h : bwt->holes)
+		refLength += h.second;
+		
 	SAMFile samFile(output, refName, refLength);
 	RandomizedAligner randAlign(bwt, &samFile);
    

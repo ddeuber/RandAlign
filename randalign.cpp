@@ -233,7 +233,7 @@ int RandomizedAligner::get_alignment_candidate(std::string const& read, std::str
 	int readEnd = readAligned[match].find_last_not_of('-') + 1;
 	int readSize = readEnd - readStart;
 	cigarOutput = SAMFile::alignment_to_CIGAR(dnaAligned[match].substr(readStart, readSize), readAligned[match].substr(readStart, readSize));
-	return refPos[match] + readStart;
+	return bwt->convert_index_to_original_index(refPos[match] + readStart);
 }
 
 results_block* RandomizedAligner::align_and_print(read_block* rb, int maxIter){
@@ -271,7 +271,7 @@ results_block* RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 		if (mismatchOnly)
 			maxDist = std::min(i/5 + 1, 10);
 		else
-			maxDist = std::min((i-maxIter/5)/2 + 1, 10);
+			maxDist = std::min((i-maxIter)/5 + 1, 10);
 
 		pos1 = get_alignment_candidate(read1, qualSeq1, meanSeedLength, maxDist, cigar1, dist1, mismatchOnly);
 		pos2 = get_alignment_candidate(read2, qualSeq2, meanSeedLength, maxDist, cigar2, dist2, mismatchOnly);

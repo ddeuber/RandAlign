@@ -29,6 +29,7 @@ extern std::map<char, int> mapOfGenes;
 
 extern std::map<char, char> map_complement;
 
+
 class BWT {
 	private:
         int* C; 
@@ -60,6 +61,9 @@ class BWT {
 
         // returns location in original string based on the location array 
         int get_location(int);
+
+        // convert location in reference to location in original reference sequece with Ns
+        int convert_index_to_original_index(int index);
 };
 
 #endif

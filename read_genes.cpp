@@ -32,7 +32,7 @@ string join(const vector<string>& vec, const char* delim)
 
 // returns the newly read genen and
 // a vector of pairs containing the starting position of each sequence of N's and the number of N's in this position
-string read_reference_gene(const string& filename, string& refName, int &refLength, vector< pair<int, int> >& holes){
+string read_reference_gene(const string& filename, string& refName, vector< pair<int, int> >& holes){
     string gene;
     vector<string> vector_genes;
 
@@ -48,7 +48,6 @@ string read_reference_gene(const string& filename, string& refName, int &refLeng
         vector_genes.push_back("$");
 
         string str = join(vector_genes, "");
-		refLength = str.length() - 1;
 
         // find potential N's in the string
         // all position should be relative to the new index

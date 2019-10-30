@@ -38,19 +38,30 @@ int quasi_local_alignment(std::string const &s1, std::string const &s2, std::str
 
 
 class RandomizedAligner {
+    /*
+     * RandomizedAligner finds matching positions for reads by taking two random seeds and matching them to the reference genome. 
+     * In particular, get_alignment_candidate is a function which applies this randomized match-finding for one read and returns one of the matches,
+     * where a match with a lower edit distance has a higher probability of being returned.
+     * This is then used in align_and_print for both read1 and read2 to get possible matching positions, and the position is accepted
+     * if the forward and the reverse read have a distance of no more than 450+readlength. 
+     */
 	private:
 		BWT* bwt;
 		SAMFile* samFile;
+
+		/*  
+         *  Returns position of possible match, -1 if nothing is found. The according cigar string is stored in cigarOutput, and the edit distance in editDistance.
+         *  If mismatchOnly is true, insertions and deletions will not be considered for the alignment (this makes it much faster since we do not need to call quasi_local_alignment).
+		 *  Note that the actual mean of the seeds will be meanSeedLength + 10.
+         */
+		int get_alignment_candidate(std::string const& read, std::string const& qualString, int meanSeedLength, int maxDist, std::string& cigarOutput, int &editDistance, bool mismatchOnly);
 	
 	public:
 		RandomizedAligner(BWT* bwt, SAMFile* samfile);
 
-		// returns position of possible match, -1 if nothing is found. The according cigar string is stored in cigarOutput, and the edit distance in editDistance
-		// Note that the actual mean of the seeds will be meanSeedLength + 10 
-		int get_alignment_candidate(std::string const& read, std::string const& qualString, int meanSeedLength, int maxDist, std::string& cigarOutput, int &editDistance, bool mismatchOnly);
-		void get_alignment_candidates(std::string const& read, std::string const& qualString, int meanSeedLength, int maxShift, int maxDistance, std::vector<int> &refPositions, std::vector<std::string> &cigarStrings, std::vector<int> &editDistances, bool mismatchOnly);
-
-		// align and print into SAMFile
+		/* 
+         * Aligns and prints into SAMFile one read pair.
+         */
 		results_block* align_and_print(read_block* rb, int maxIter=100);
 };
 
