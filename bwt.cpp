@@ -28,8 +28,9 @@ int* counts_table(const string& str);
 int** occurrences_matrix(const string& str); 
 
 // use when we want to create a new index
-BWT::BWT(string& rawString, vector< pair<int, int> > holes) {
+BWT::BWT(string& rawString, std::string& refName, vector< pair<int, int> > holes) {
     this->reference = rawString;
+    this->refName = refName;
     this->encode();
 
     this->holes = holes;
@@ -78,17 +79,6 @@ void BWT::recover_encoded_string(int string_length){
         this->reference[(this->location_array[i] +string_length - 1) % string_length] = this->encoded[i];
     }
 }
-
-// This function assumes that location_array is also stored, else use the one below
-// void BWT::decode() {
-//     unsigned long string_length = this->encoded.length();
-//     cout << string_length << endl;
-//     this->reference[string_length];
-//     cout << "1" << endl;
-
-//     for (unsigned long i = 0; i < string_length; ++i)
-//         this->reference[(this->location_array[i] + string_length - 1) % string_length] = this->encoded[i];
-// }
 
 void serialize_1d(ostream& outfile, int* arr, int elems) {
     outfile << elems << " ";
@@ -190,6 +180,10 @@ void BWT::store_index(const string& directory){
     serialize_vector(file_holes, this->holes);
     file_holes.close();
 
+    ofstream file_refName (directory + "/" + REFNAME_FILENAME + FILENAME_TYPE, ios::out);
+    file_refName << this->refName;
+    file_refName.close();
+
     return;
 }
 
@@ -221,6 +215,10 @@ void BWT::recover_index(const string& directory){
     getFile(directory + "/" + HOLES_FILENAME + FILENAME_TYPE, file_holes);
     this->holes = deserialize_vector(file_holes);
     file_holes.close();
+
+    ifstream file_refName (directory + "/" + REFNAME_FILENAME + FILENAME_TYPE, ios::out);
+    file_refName >> this->refName;
+    file_refName.close();
 
     recover_encoded_string(*string_length);
 

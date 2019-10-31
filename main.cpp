@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
         cout << "Creating index in directory: \"index\"" << endl;
 
         reference = read_reference_gene(argv[2], refName, holes);
-        bwt = new BWT(reference, holes);
+        bwt = new BWT(reference, refName, holes);
 
         bwt->store_index("index");
 
@@ -75,11 +75,12 @@ int main(int argc, char** argv) {
     } else if (strcmp(argv[1], "run") == 0){
         // in this case create the index and run
         reference = read_reference_gene(argv[2], refName, holes);
-        bwt = new BWT(reference, holes);
+        bwt = new BWT(reference, refName, holes);
 
         // to get files with allignments skip first 1 word corresponding to the words "recover"
         allignment_file_index = 3;
     } else {
+        // should never reach this
         cout << "Unkownn option: " << argv[1] << ". Exiting.." << endl;
         exit(1);
     }
@@ -96,7 +97,7 @@ int main(int argc, char** argv) {
 	for (auto h : bwt->holes)
 		refLength += h.second;
 		
-	SAMFile samFile(output, refName, refLength);
+	SAMFile samFile(output, bwt->refName, refLength);
 	RandomizedAligner randAlign(bwt, &samFile);
    
     ReadGenes* rg = new ReadGenes(argv[allignment_file_index], argv[allignment_file_index + 1]);
@@ -107,10 +108,11 @@ int main(int argc, char** argv) {
  
     //Read enviromental variable 
     int par_reads;
-    char *v=getenv("PARALLEL_READS");
-    if(v==NULL){
+    char *v = getenv("PARALLEL_READS");
+    
+    if(v == NULL){
         par_reads=4096; //set default chunk size
-    }else{
+    } else{
         par_reads=atoi(v); //convert string to integer
     }
 

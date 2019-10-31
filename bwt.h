@@ -12,6 +12,7 @@
 #define COUNTS_ARRAY_FILENAME "counts_array"
 #define OCCURRENCES_MATRIX_FILENAME "occurrences_matrix"
 #define HOLES_FILENAME "holes"
+#define REFNAME_FILENAME "refName"
 #define FILENAME_TYPE ".save"
 
 #define SEED_LENGTH 12
@@ -45,10 +46,12 @@ class BWT {
         void recover_index(const std::string&);
 
 	public:
+        std::string refName;
+
         std::vector< std::pair<int, int> > holes;
 
         // create BWT and index
-        BWT(std::string&, std::vector< std::pair<int, int> >);
+        BWT(std::string&, std::string&, std::vector< std::pair<int, int> >);
 
         // create BWT by reading index from filesystem
         BWT(const std::string&);
