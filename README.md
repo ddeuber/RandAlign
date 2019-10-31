@@ -35,6 +35,8 @@ To compile:
  make PARALLEL=1 # to run parallel version
  ```
 
+ Default compiler `clang`. Can be changed by assigning `CXX` during compiling.
+
 To run:
 
  ```
