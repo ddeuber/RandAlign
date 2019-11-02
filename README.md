@@ -50,6 +50,6 @@ We are assuming the read_files to have the form `<read_file>Cov1.fq` and `<read_
 The generated sam output file will be located in the same directory under the naming `<read_file>Cov.generated.mod.sam`
 
 
-To evaluate our method we compared results generated from other read alignment tools, outputing in 100% of the cases the same alignments for the small genome and more than 98% of the cases the same alignments for the large genome.
+To evaluate our method we compared results generated from other read alignment tools (bowtie2), outputing in 100% of the cases the same alignments for the small genome and more than 98% of the cases the same alignments for the large genome.
 
 There is also the option to modify the environmental varialbe `PARALLEL_READS` to fine tune the number of possible parallel reads, although the default value gives the best results.
