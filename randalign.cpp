@@ -269,9 +269,9 @@ results_block* RandomizedAligner::align_and_print(read_block* rb, int maxIter){
 		mismatchOnly = i < maxIter/2;
 
 		if (mismatchOnly)
-			maxDist = std::min(i/5 + 1, 10);
+			maxDist = std::min(i/5 + 1, 5);
 		else
-			maxDist = std::min((i-maxIter)/5 + 1, 10);
+			maxDist = std::min((i-maxIter/2)/5 + 1, 10);
 
 		pos1 = get_alignment_candidate(read1, qualSeq1, meanSeedLength, maxDist, cigar1, dist1, mismatchOnly);
 		pos2 = get_alignment_candidate(read2, qualSeq2, meanSeedLength, maxDist, cigar2, dist2, mismatchOnly);
