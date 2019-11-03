@@ -13,7 +13,7 @@ endif
 MYFLAGS = -DPARALLEL_RUN=$(PARALLEL_RUN)
 CXXFLAGS += $(MYFLAGS)
 
-ifeq ($(PARALLEL_RUN),"1")
+ifeq ($(PARALLEL_RUN),1)
 # Link in the TBB libraries
 LDLIBS := -ltbb
 else
