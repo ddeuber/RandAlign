@@ -217,7 +217,7 @@ void BWT::recover_index(const string& directory){
     file_holes.close();
 
     ifstream file_refName (directory + "/" + REFNAME_FILENAME + FILENAME_TYPE, ios::out);
-    file_refName >> this->refName;
+    getline(file_refName, this->refName);
     file_refName.close();
 
     recover_encoded_string(*string_length);
