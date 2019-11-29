@@ -3,12 +3,12 @@
 This project is part of the Computational Biomedicine I (Fall Semester 2019) at ETH.
 
 
-| Name  | Email |
-| ------------- | ------------- |
-| Deuber David  | ddeuber@student.ethz.ch  |
-| Adamos Solomou  | solomoua@student.ethz.ch  |
-| Anagnostidis Sotiris  | sanagnos@student.ethz.ch  |
-| Vasilakopoulos George  | gvasilak@student.ethz.ch  |
+| Contributors  |
+| ------------- |
+| Deuber David  | 
+| Adamos Solomou  | 
+| Anagnostidis Sotiris  | 
+| Vasilakopoulos George  | 
 
 ## Project structure
 
